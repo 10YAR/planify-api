@@ -1,9 +1,9 @@
 package main
 
 import (
+	"goserver/Controllers"
 	"io"
 	"net/http"
-	"planify-api/Controllers"
 )
 
 func main() {

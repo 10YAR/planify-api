@@ -5,8 +5,8 @@ ENV GO111MODULE=on
 
 # Build en 2 étapes
 ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
+ENV GOOS=$GOOS
+ENV GOARCH=$GOARCH
 
 WORKDIR /goserver
 COPY /goserver/go.mod ./
