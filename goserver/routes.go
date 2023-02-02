@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"html"
 	"io"
 	"net/http"
+	"planify-api/Controllers"
 )
 
 func main() {
@@ -14,10 +13,9 @@ func main() {
 		if err != nil {
 			return
 		}
-	}))
+	})
 
 	// Appointments
-	//http.HandleFunc("/appointments", getAppointments)
-
+	http.HandleFunc("/appointments", Controllers.GetAppointments)
 
 }
