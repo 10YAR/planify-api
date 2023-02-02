@@ -8,15 +8,12 @@ ENV CGO_ENABLED=0
 ENV GOOS=$GOOS
 ENV GOARCH=$GOARCH
 
-WORKDIR /goserver
-COPY /goserver/go.mod ./
-RUN go mod download && go mod verify
+WORKDIR /api
+COPY ./api ./
+RUN go mod download && go mod verify && go build -v -o /build/planifyApi .
 
-COPY . .
-RUN go build -v -o /build/buildedApp ./goserver/main.go
+FROM alpine:3.17.1 as FINAL
 
-FROM scratch as FINAL
+COPY --from=BUILDER /build/planifyApi .
 
-COPY --from=BUILDER /build/buildedApp .
-
-ENTRYPOINT ["./buildedApp"]
+CMD ./planifyApi
