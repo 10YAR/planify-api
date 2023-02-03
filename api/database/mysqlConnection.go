@@ -7,7 +7,6 @@ import (
 )
 
 func Mysql() *sql.DB {
-
 	DB_HOST := os.Getenv("DB_HOST")
 	if DB_HOST == "" {
 		DB_HOST = "localhost"
