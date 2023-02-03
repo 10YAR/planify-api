@@ -42,7 +42,7 @@ services:
         dockerfile: Dockerfile
       restart: on-failure
       environment:
-        DB_HOST: ${DB_HOST:-planify}
+        DB_HOST: ${DB_HOST:-db}
         DB_NAME: ${DB_NAME:-planify}
         DB_USER: ${DB_USER:-root}
         DB_PASSWORD: ${DB_PASSWORD:-root}
