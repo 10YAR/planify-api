@@ -11,7 +11,7 @@ func ValidateStruct(data any) string {
 	err := validate.Struct(data)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			errors += err.StructNamespace() + " " + err.Tag() + " " + err.Param() + " \n"
+			errors += err.StructNamespace() + " " + err.Tag() + " " + err.Param() + " "
 		}
 	}
 	return errors
