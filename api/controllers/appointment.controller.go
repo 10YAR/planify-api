@@ -11,7 +11,7 @@ func GetAppointments(c *fiber.Ctx) error {
 	// TODO
 	db := database.Mysql()
 
-	res, err := db.Query("SELECT * FROM appointments")
+	res, err := db.Query("SELECT * FROM appointment")
 	if err != nil {
 		return err
 	}
