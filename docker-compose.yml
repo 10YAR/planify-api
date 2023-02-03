@@ -9,7 +9,7 @@ services:
           MARIADB_DATABASE: ${DB_NAME:-planify}
           MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
         volumes:
-          - ./migrations/01-tables.sql:/docker-entrypoint-initdb.d/migration.sql
+          - ./api/database/migrations/01-tables.sql:/docker-entrypoint-initdb.d/migration.sql
           - db_data:/var/lib/mysql
         ports:
         - "${DB_PORT:-3308}:3306"
