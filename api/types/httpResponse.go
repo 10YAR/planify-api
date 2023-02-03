@@ -4,4 +4,5 @@ type HttpResponse struct {
 	Status   int
 	Message  string
 	HttpCode int
+	Error    error `json:"error,omitempty"`
 }

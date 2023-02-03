@@ -10,7 +10,7 @@ import (
 func GetUsers(c *fiber.Ctx) error {
 	res, err := database.DoQuery("SELECT * FROM users")
 	if err != nil {
-		return c.JSON(utils.E503("Error while getting users"))
+		return c.JSON(utils.E503("Error while getting users", err))
 	}
 
 	var users []types.User
@@ -18,7 +18,7 @@ func GetUsers(c *fiber.Ctx) error {
 		var user types.User
 		err := res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Role)
 		if err != nil {
-			return c.JSON(utils.E503("Error while getting users"))
+			return c.JSON(utils.E503("Error while getting users", err))
 		}
 
 		users = append(users, user)
@@ -31,14 +31,14 @@ func GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	res, err := database.DoQuery("SELECT * FROM users WHERE id = ?", id)
 	if err != nil {
-		return c.JSON(utils.E503("Error while getting user"))
+		return c.JSON(utils.E503("Error while getting user", err))
 	}
 
 	var user types.User
 	for res.Next() {
 		err := res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Role)
 		if err != nil {
-			return c.JSON(utils.E503("Error while getting user"))
+			return c.JSON(utils.E503("Error while getting user", err))
 		}
 	}
 
@@ -56,12 +56,12 @@ func CreateUser(c *fiber.Ctx) error {
 
 	errors := utils.ValidateStruct(*user)
 	if errors != "" {
-		return c.JSON(utils.E400("Bad request :\n" + errors))
+		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
 	_, err := database.DoQuery("INSERT INTO users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password, user.Role)
 	if err != nil {
-		return c.JSON(utils.E503("Error while creating user"))
+		return c.JSON(utils.E503("Error while creating user", err))
 	}
 
 	return c.JSON(types.HttpResponse{Status: 1, Message: "User created successfully", HttpCode: 200})
@@ -80,12 +80,12 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	errors := utils.ValidateStruct(*user)
 	if errors != "" {
-		return c.JSON(utils.E400("Bad request :\n" + errors))
+		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
 	_, err := database.DoQuery("UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ?, role = ? WHERE id = ?", user.FirstName, user.LastName, user.Email, user.Password, user.Role, id)
 	if err != nil {
-		return c.JSON(utils.E503("Error while updating user"))
+		return c.JSON(utils.E503("Error while updating user", err))
 	}
 
 	return c.JSON(types.HttpResponse{Status: 1, Message: "User updated successfully", HttpCode: 200})
@@ -96,7 +96,7 @@ func DeleteUser(c *fiber.Ctx) error {
 
 	_, err := database.DoQuery("DELETE FROM users WHERE id = ?", id)
 	if err != nil {
-		return c.JSON(utils.E503("Error while deleting user"))
+		return c.JSON(utils.E503("Error while deleting user", err))
 	}
 
 	return c.JSON(types.HttpResponse{Status: 1, Message: "User deleted successfully", HttpCode: 200})
