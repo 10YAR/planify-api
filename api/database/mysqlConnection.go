@@ -3,17 +3,16 @@ package database
 import (
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
-	"os"
 )
 
 func Mysql() *sql.DB {
 
 	conf := mysql.Config{
 		User:                 "root",
-		Passwd:               os.Getenv("MARIADB_ROOT_PASSWORD"),
+		Passwd:               "root",
 		Net:                  "tcp",
 		Addr:                 "localhost:3308",
-		DBName:               os.Getenv("MARIADB_DATABASE"),
+		DBName:               "planify",
 		AllowNativePasswords: true,
 	}
 
