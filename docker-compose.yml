@@ -6,15 +6,15 @@ services:
         container_name: db
         restart: always
         environment:
-          MARIADB_DATABASE: ${MARIADB_DATABASE:-planify}
-          MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
+          MARIADB_DATABASE: ${DB_NAME:-planify}
+          MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
         volumes:
           - ./migrations/01-tables.sql:/docker-entrypoint-initdb.d/migration.sql
           - db_data:/var/lib/mysql
         ports:
-        - "3308:3306"
+        - "${DB_PORT:-3308}:3306"
         healthcheck:
-          test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MARIADB_ROOT_PASSWORD:-root}"]
+          test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER:-root}", "-p${DB_ROOT_PASSWORD:-root}"]
           interval: 5s
           timeout: 3s
           retries: 3
@@ -24,12 +24,12 @@ services:
         container_name: phpmyadmin
         restart: always
         environment:
-          PMA_HOST: ${PMA_HOST:-db}
-          PMA_PORT: ${PMA_PORT:-3306}
-          PMA_USER: ${PMA_USER:-root}
-          PMA_PASSWORD: ${PMA_PASSWORD:-root}
-          MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
-          MYSQL_PASSWORD: ${MARIADB_PASSWORD:-root}
+          PMA_HOST: ${DB_HOST:-db}
+          PMA_PORT: ${DB_PORT:-3306}
+          PMA_USER: ${DB_USER:-root}
+          PMA_PASSWORD: ${DB_PASSWORD:-root}
+          MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+          MYSQL_PASSWORD: ${DB_PASSWORD:-root}
         ports:
         - "8080:80"
         depends_on:
@@ -42,8 +42,11 @@ services:
         dockerfile: Dockerfile
       restart: on-failure
       environment:
-        MARIADB_DATABASE: ${MARIADB_DATABASE:-planify}
-        MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
+        DB_HOST: ${DB_HOST:-planify}
+        DB_NAME: ${DB_NAME:-planify}
+        DB_USER: ${DB_USER:-root}
+        DB_PASSWORD: ${DB_PASSWORD:-root}
+        DB_PORT: ${DB_PORT:-3306}
       ports:
         - "8000:8000"
       depends_on:

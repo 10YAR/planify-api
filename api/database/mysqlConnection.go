@@ -3,16 +3,42 @@ package database
 import (
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
+	"os"
 )
 
 func Mysql() *sql.DB {
 
+	DB_HOST := os.Getenv("DB_HOST")
+	if DB_HOST == "" {
+		DB_HOST = "localhost"
+	}
+
+	DB_USER := os.Getenv("DB_USER")
+	if DB_USER == "" {
+		DB_USER = "root"
+	}
+
+	DB_PASSWORD := os.Getenv("DB_PASSWORD")
+	if DB_PASSWORD == "" {
+		DB_PASSWORD = "root"
+	}
+
+	DB_PORT := os.Getenv("DB_PORT")
+	if DB_PORT == "" {
+		DB_PORT = "3308"
+	}
+
+	DB_NAME := os.Getenv("DB_NAME")
+	if DB_NAME == "" {
+		DB_NAME = "planify"
+	}
+
 	conf := mysql.Config{
-		User:                 "root",
-		Passwd:               "root",
+		User:                 DB_USER,
+		Passwd:               DB_PASSWORD,
 		Net:                  "tcp",
-		Addr:                 "localhost:3308",
-		DBName:               "planify",
+		Addr:                 DB_HOST + ":" + DB_PORT,
+		DBName:               DB_NAME,
 		AllowNativePasswords: true,
 	}
 
