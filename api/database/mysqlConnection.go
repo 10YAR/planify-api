@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func mysqlConnection() {
+func Mysql() *sql.DB {
 
 	conf := mysql.Config{
 		User:                 "root",
@@ -22,10 +22,12 @@ func mysqlConnection() {
 		panic(err)
 	}
 
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(db)
+	return db
+}
+
+func DeferClose(db *sql.DB) {
+	err := db.Close()
+	if err != nil {
+		panic(err)
+	}
 }

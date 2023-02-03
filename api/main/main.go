@@ -1,16 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"log"
 )
 
 func main() {
-	app := DefineRoutes()
-
+	App := DefineRoutes()
 	fmt.Printf("starting Planify API at port 8000 \n")
-	log.Fatal(app.Listen(":8000"))
+	log.Fatal(App.Listen(":8000"))
 }
 
 func GetFiberApp() *fiber.App {
@@ -20,6 +20,8 @@ func GetFiberApp() *fiber.App {
 		StrictRouting: false,
 		ServerHeader:  "Fiber",
 		AppName:       "Planify API 1.0",
+		JSONEncoder:   json.Marshal,
+		JSONDecoder:   json.Unmarshal,
 	})
 
 	return app
