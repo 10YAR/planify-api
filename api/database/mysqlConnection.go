@@ -12,7 +12,7 @@ func Mysql() *sql.DB {
 		User:                 "root",
 		Passwd:               os.Getenv("MARIADB_ROOT_PASSWORD"),
 		Net:                  "tcp",
-		Addr:                 "db:3306",
+		Addr:                 "localhost:3308",
 		DBName:               os.Getenv("MARIADB_DATABASE"),
 		AllowNativePasswords: true,
 	}
