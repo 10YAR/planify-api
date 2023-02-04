@@ -25,16 +25,20 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Vérification de l'utilisateur
-	res, err := database.DoQuery("SELECT * FROM users WHERE email = ? AND password = ?", auth.Email, auth.Password)
+	res, err := database.DoQuery("SELECT * FROM users WHERE email = ?", auth.Email)
 	if err != nil {
 		return c.JSON(utils.E503("Internal Server Error", err))
 	}
 
-	var user types.User
+	user := new(types.User)
 	for res.Next() {
 		err := res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Role)
 		if err != nil {
 			return c.JSON(utils.E503("Internal Server Error", err))
+		}
+
+		if !utils.CheckPasswordHash(auth.Password, user.Password) {
+			return c.JSON(utils.E401("Unauthorized", nil))
 		}
 	}
 
@@ -63,6 +67,35 @@ func Login(c *fiber.Ctx) error {
 }
 
 func Register(c *fiber.Ctx) error {
-	// TODO
-	return c.SendString("Register")
+	user := new(types.User)
+
+	err := c.BodyParser(user)
+	if err != nil {
+		return c.JSON(utils.E400("Bad Request", err))
+	}
+
+	// Valide les données envoyées
+	errors := utils.ValidateStruct(*user)
+	if errors != "" {
+		return c.JSON(utils.E400("Bad request : "+errors, nil))
+	}
+
+	// Vérification de l'utilisateur
+	res, err := database.DoQuery("SELECT * FROM users WHERE email = ?", user.Email)
+	if err != nil {
+		return c.JSON(utils.E503("Internal Server Error", err))
+	}
+
+	for res.Next() {
+		return c.JSON(types.HttpResponse{Status: 0, Message: "Email already exists", HttpCode: 200})
+	}
+
+	user.Password, _ = utils.HashPassword(user.Password)
+	// Insertion de l'utilisateur
+	_, err = database.DoQuery("INSERT INTO users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password, user.Role)
+	if err != nil {
+		return c.JSON(utils.E503("Internal Server Error", err))
+	}
+
+	return c.JSON(types.HttpResponse{Status: 1, Message: "User created successfully", HttpCode: 200})
 }
