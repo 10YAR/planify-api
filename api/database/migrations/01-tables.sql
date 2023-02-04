@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `shop_availability` (
                                      `end_time` time
 );
 
-CREATE TABLE IF NOT EXISTS `appointment` (
+CREATE TABLE IF NOT EXISTS `appointments` (
                                `id` int PRIMARY KEY AUTO_INCREMENT,
                                `customer_name` varchar(255),
                                `appointment_date` date,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `appointment` (
                                `shop_id` int
 );
 
-ALTER TABLE `appointment` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
+ALTER TABLE `appointments` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
 
 ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
 
@@ -49,4 +49,11 @@ INSERT INTO `shops` (`id`, `shop_name`, `address`, `created_at`, `user_id`) VALU
     (1, 'test', 'test', '2023-02-03 16:02:34', 1);
 
 INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `time_range`, `start_time`, `end_time`) VALUES
-    (1, 1, 'monday', 30, '09:00:00', '19:00:00');
+    (1, 1, 'tuesday', 30, '09:00:00', '19:00:00'),
+    (2, 1, 'wednesday', 30, '09:00:00', '19:00:00'),
+    (3, 1, 'thursday', 15, '09:00:00', '17:00:00'),
+    (4, 1, 'friday', 15, '09:00:00', '17:00:00'),
+    (5, 1, 'saturday', 30, '09:00:00', '19:00:00');
+
+INSERT INTO `appointments` (`id`, `customer_name`, `appointment_date`, `start_time`, `end_time`, `status`, `shop_id`) VALUES
+    (1, 'test', '2023-02-03', '2023-02-04 16:30:00', '2023-02-04 17:00:00', 1, 1);

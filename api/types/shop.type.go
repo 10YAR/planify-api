@@ -12,3 +12,10 @@ type ShopInfos struct {
 	ShopName string
 	Address  string
 }
+
+type ShopInfosWithAvailabilitiesAndAppointments struct {
+	ShopName       string
+	Address        string
+	Availabilities []ShopAvailability
+	Appointments   []AppointmentDateTimeInfos
+}

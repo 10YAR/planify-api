@@ -6,9 +6,3 @@ type ShopAvailability struct {
 	StartTime string
 	EndTime   string
 }
-
-type ShopInfosWithAvailabilities struct {
-	ShopName       string
-	Address        string
-	Availabilities []ShopAvailability
-}
