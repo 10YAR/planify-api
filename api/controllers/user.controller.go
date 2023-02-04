@@ -59,6 +59,7 @@ func CreateUser(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
+	user.Password, _ = utils.HashPassword(user.Password)
 	_, err := database.DoQuery("INSERT INTO users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password, user.Role)
 	if err != nil {
 		return c.JSON(utils.E503("Error while creating user", err))
@@ -83,9 +84,26 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
-	_, err := database.DoQuery("UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ?, role = ? WHERE id = ?", user.FirstName, user.LastName, user.Email, user.Password, user.Role, id)
+	res, err := database.DoQuery("SELECT * FROM users WHERE id = ?", id)
 	if err != nil {
-		return c.JSON(utils.E503("Error while updating user", err))
+		return c.JSON(utils.E503("Error while getting user", err))
+	}
+
+	var oldUser types.User
+	for res.Next() {
+		err := res.Scan(&oldUser.ID, &oldUser.FirstName, &oldUser.LastName, &oldUser.Email, &oldUser.Password, &oldUser.Role)
+		if err != nil {
+			return c.JSON(utils.E503("Error while getting user", err))
+		}
+	}
+
+	if !utils.CheckPasswordHash(user.Password, oldUser.Password) {
+		user.Password, _ = utils.HashPassword(user.Password)
+	}
+
+	_, errr := database.DoQuery("UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ?, role = ? WHERE id = ?", user.FirstName, user.LastName, user.Email, user.Password, user.Role, id)
+	if errr != nil {
+		return c.JSON(utils.E503("Error while updating user", errr))
 	}
 
 	return c.JSON(types.HttpResponse{Status: 1, Message: "User updated successfully", HttpCode: 200})
