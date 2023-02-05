@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `shop_availability` (
                                      `id` int PRIMARY KEY AUTO_INCREMENT,
                                      `shop_id` int,
                                      `day_of_week` ENUM ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'),
-                                     `time_range` int,
+                                     `duration` int,
                                      `start_time` time,
                                      `end_time` time
 );
@@ -48,7 +48,7 @@ INSERT INTO `users` (`id`, `firstName`, `lastName`, `email`, `password`, `role`)
 INSERT INTO `shops` (`id`, `shop_name`, `address`, `created_at`, `user_id`) VALUES
     (1, 'test', 'test', '2023-02-03 16:02:34', 1);
 
-INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `time_range`, `start_time`, `end_time`) VALUES
+INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `duration`, `start_time`, `end_time`) VALUES
     (1, 1, 'tuesday', 30, '09:00:00', '19:00:00'),
     (2, 1, 'wednesday', 30, '09:00:00', '19:00:00'),
     (3, 1, 'thursday', 15, '09:00:00', '17:00:00'),
