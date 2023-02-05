@@ -9,3 +9,9 @@ type Appointment struct {
 	Status          int    `validate:"required,number" json:"status"`
 	ShopId          int    `validate:"required,number" json:"shop_id"`
 }
+
+type AppointmentDateTimeInfos struct {
+	AppointmentDate string
+	StartTime       string
+	EndTime         string
+}
