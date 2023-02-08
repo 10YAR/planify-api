@@ -48,19 +48,20 @@ func GetShop(c *fiber.Ctx) error {
 
 	availabilities, _ := GetAvailabilitiesOfAShop(id)
 	appointments, _ := GetAppointmentsOfAShop(id)
+	availabilitiesWithTimeSlots := utils.GenerateTimeSlotsOfAShop(availabilities)
 
-	ShopInfoWithAvailabilityAppointmentsTimeRange := types.ShopInfosWithAvailabilitiesAndAppointments{
+	ShopInfoWithAvailabilityAppointmentsTimeSlots := types.ShopInfosAvailabilitiesAndAppointments{
 		ShopName:       shop.ShopName,
 		Address:        shop.Address,
-		Availabilities: availabilities,
+		Availabilities: availabilitiesWithTimeSlots,
 		Appointments:   appointments,
 	}
 
-	return c.JSON(ShopInfoWithAvailabilityAppointmentsTimeRange)
+	return c.JSON(ShopInfoWithAvailabilityAppointmentsTimeSlots)
 }
 
 func GetAvailabilitiesOfAShop(id string) ([]types.ShopAvailability, types.HttpResponse) {
-	resShopAvailability, errShopAvailability := database.DoQuery("SELECT shop_availability.day_of_week, shop_availability.time_range, shop_availability.start_time, shop_availability.end_time FROM shops INNER JOIN shop_availability ON shops.id = shop_availability.shop_id WHERE shops.id = ? ", id)
+	resShopAvailability, errShopAvailability := database.DoQuery("SELECT shop_availability.day_of_week, shop_availability.duration, shop_availability.start_time, shop_availability.end_time FROM shops INNER JOIN shop_availability ON shops.id = shop_availability.shop_id WHERE shops.id = ? ", id)
 	var errorMessage types.HttpResponse
 	if errShopAvailability != nil {
 		errorMessage = utils.E503("Error while getting ShopAvailability from database", errShopAvailability)
@@ -69,7 +70,7 @@ func GetAvailabilitiesOfAShop(id string) ([]types.ShopAvailability, types.HttpRe
 	var availabilities []types.ShopAvailability
 	for resShopAvailability.Next() {
 		var shopAvailability types.ShopAvailability
-		err := resShopAvailability.Scan(&shopAvailability.DayOfWeek, &shopAvailability.TimeRange, &shopAvailability.StartTime, &shopAvailability.EndTime)
+		err := resShopAvailability.Scan(&shopAvailability.DayOfWeek, &shopAvailability.Duration, &shopAvailability.StartTime, &shopAvailability.EndTime)
 		if err != nil {
 			errorMessage = utils.E503("Error while getting availabilities attributes", err)
 		}
