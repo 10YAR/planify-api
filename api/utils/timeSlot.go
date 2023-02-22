@@ -6,15 +6,8 @@ import (
 	"time"
 )
 
-func TimeSlot(start time.Time, duration time.Duration) types.TimeSlot {
-	return types.TimeSlot{
-		Start: start,
-		End:   start.Add(duration),
-	}
-}
-
-func TimeSlots(start string, end string, duration int) []types.TimeSlot {
-	var times []types.TimeSlot
+func TimeSlots(start string, end string, duration int) []time.Time {
+	var times []time.Time
 	layout := "15:00:00"
 
 	startTime, errStart := time.Parse(layout, start)
@@ -34,7 +27,7 @@ func TimeSlots(start string, end string, duration int) []types.TimeSlot {
 			break
 		}
 
-		times = append(times, TimeSlot(t, durationTime))
+		times = append(times, t)
 	}
 	return times
 }
