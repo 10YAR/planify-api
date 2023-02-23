@@ -10,12 +10,17 @@ func TimeSlots(start string, end string, duration int) []time.Time {
 	var times []time.Time
 	layout := "15:00:00"
 
-	startTime, errStart := time.Parse(layout, start)
+	paris, err := time.LoadLocation("Europe/Paris")
+	if err != nil {
+		panic(err)
+	}
+
+	startTime, errStart := time.ParseInLocation(layout, start, paris)
 	if errStart != nil {
 		fmt.Println("Error parsing startTime:", errStart)
 	}
 
-	endTime, errEnd := time.Parse(layout, end)
+	endTime, errEnd := time.ParseInLocation(layout, end, paris)
 	if errEnd != nil {
 		fmt.Println("Error parsing endTime:", errEnd)
 	}

@@ -18,11 +18,16 @@ func TestTimeSlots(t *testing.T) {
 		// When
 		times := utils.TimeSlots(start, end, duration)
 
+		paris, err := time.LoadLocation("Europe/Paris")
+		if err != nil {
+			panic(err)
+		}
+
 		expectedTimes := []time.Time{
-			time.Date(0000, 01, 01, 9, 0, 0, 0, time.UTC),
-			time.Date(0000, 01, 01, 9, 15, 0, 0, time.UTC),
-			time.Date(0000, 01, 01, 9, 30, 0, 0, time.UTC),
-			time.Date(0000, 01, 01, 9, 45, 0, 0, time.UTC),
+			time.Date(0000, 01, 01, 9, 0, 0, 0, paris),
+			time.Date(0000, 01, 01, 9, 15, 0, 0, paris),
+			time.Date(0000, 01, 01, 9, 30, 0, 0, paris),
+			time.Date(0000, 01, 01, 9, 45, 0, 0, paris),
 		}
 
 		// Then
@@ -44,6 +49,11 @@ func TestGetTimeSlotsOfAShop(t *testing.T) {
 			},
 		}
 
+		paris, err := time.LoadLocation("Europe/Paris")
+		if err != nil {
+			panic(err)
+		}
+
 		expectedAvailabilities := []types.ShopAvailabilityWithTimeSlots{
 			{
 				DayOfWeek: "saturday",
@@ -51,8 +61,8 @@ func TestGetTimeSlotsOfAShop(t *testing.T) {
 				StartTime: "09:00:00",
 				EndTime:   "10:00:00",
 				TimeSlots: []time.Time{
-					time.Date(0000, 01, 01, 9, 0, 0, 0, time.UTC),
-					time.Date(0000, 01, 01, 9, 30, 0, 0, time.UTC),
+					time.Date(0000, 01, 01, 9, 0, 0, 0, paris),
+					time.Date(0000, 01, 01, 9, 30, 0, 0, paris),
 				},
 			},
 		}

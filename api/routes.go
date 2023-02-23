@@ -27,6 +27,7 @@ func DefineRoutes() *fiber.App {
 
 	// Appointments (Public)
 	appointments := app.Group("/appointments")
+	appointments.Post("/", controllers.CreateAppointment)
 	appointments.Get("/", controllers.GetAppointments)
 	appointments.Get("/:id", controllers.GetAppointment)
 
@@ -45,7 +46,6 @@ func DefineRoutes() *fiber.App {
 	}))
 
 	// Appointments (Authenticated)
-	appointments.Post("/", middlewares.ProcessAuth, controllers.CreateAppointment)
 	appointments.Patch("/:id", middlewares.ProcessAuth, controllers.UpdateAppointment)
 	appointments.Delete("/:id", middlewares.ProcessAuth, controllers.DeleteAppointment)
 
