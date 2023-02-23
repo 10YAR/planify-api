@@ -35,7 +35,9 @@ CREATE TABLE IF NOT EXISTS `appointments` (
                                `shop_id` int
 );
 
-ALTER TABLE `appointments` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
+ALTER TABLE `appointments`
+    ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
+    ADD UNIQUE KEY `appointment_date_time` (`appointment_date_time`);
 
 ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
 
