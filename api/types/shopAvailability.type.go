@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 type ShopAvailability struct {
 	DayOfWeek string
 	Duration  int
@@ -12,5 +14,5 @@ type ShopAvailabilityWithTimeSlots struct {
 	Duration  int
 	StartTime string
 	EndTime   string
-	TimeSlots []TimeSlot
+	TimeSlots []time.Time
 }

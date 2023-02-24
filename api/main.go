@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"log"
 )
@@ -33,5 +34,6 @@ func GetFiberApp() *fiber.App {
 		JSONEncoder:   json.Marshal,
 		JSONDecoder:   json.Unmarshal,
 	})
+	app.Use(cors.New())
 	return app
 }

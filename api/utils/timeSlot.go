@@ -6,23 +6,21 @@ import (
 	"time"
 )
 
-func TimeSlot(start time.Time, duration time.Duration) types.TimeSlot {
-	return types.TimeSlot{
-		Start: start,
-		End:   start.Add(duration),
-	}
-}
-
-func TimeSlots(start string, end string, duration int) []types.TimeSlot {
-	var times []types.TimeSlot
+func TimeSlots(start string, end string, duration int) []time.Time {
+	var times []time.Time
 	layout := "15:00:00"
 
-	startTime, errStart := time.Parse(layout, start)
+	paris, err := time.LoadLocation("Europe/Paris")
+	if err != nil {
+		panic(err)
+	}
+
+	startTime, errStart := time.ParseInLocation(layout, start, paris)
 	if errStart != nil {
 		fmt.Println("Error parsing startTime:", errStart)
 	}
 
-	endTime, errEnd := time.Parse(layout, end)
+	endTime, errEnd := time.ParseInLocation(layout, end, paris)
 	if errEnd != nil {
 		fmt.Println("Error parsing endTime:", errEnd)
 	}
@@ -34,7 +32,7 @@ func TimeSlots(start string, end string, duration int) []types.TimeSlot {
 			break
 		}
 
-		times = append(times, TimeSlot(t, durationTime))
+		times = append(times, t)
 	}
 	return times
 }

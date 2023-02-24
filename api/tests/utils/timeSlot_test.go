@@ -8,56 +8,31 @@ import (
 	"time"
 )
 
-func TestTimeSlot(t *testing.T) {
-	t.Run("Create a time slot", func(t *testing.T) {
-		// Given
-		start := time.Date(0, 0, 0, 9, 0, 0, 0, time.UTC)
-		duration := 15 * time.Minute
-
-		// When
-		timeSlot := utils.TimeSlot(start, duration)
-
-		expectedStart := start
-		expectedEnd := start.Add(duration)
-
-		// Then
-		if timeSlot.Start != expectedStart {
-			t.Errorf("Expected start time to be %v, but got %v", expectedStart, timeSlot.Start)
-		}
-		if timeSlot.End != expectedEnd {
-			t.Errorf("Expected end time to be %v, but got %v", expectedEnd, timeSlot.End)
-		}
-	})
-}
-
 func TestTimeSlots(t *testing.T) {
 	t.Run("Create an array of time slots", func(t *testing.T) {
 		// Given
 		start := "09:00:00"
-		end := "17:00:00"
-		duration := 30
-
-		layout := "09:00:00"
-		startTime, _ := time.Parse(layout, start)
-		convertedDuration := time.Duration(duration) * time.Minute
+		end := "10:00:00"
+		duration := 15
 
 		// When
 		times := utils.TimeSlots(start, end, duration)
 
-		expectedStart := startTime
-		expectedEnd := startTime.Add(convertedDuration)
+		paris, err := time.LoadLocation("Europe/Paris")
+		if err != nil {
+			panic(err)
+		}
+
+		expectedTimes := []time.Time{
+			time.Date(0000, 01, 01, 9, 0, 0, 0, paris),
+			time.Date(0000, 01, 01, 9, 15, 0, 0, paris),
+			time.Date(0000, 01, 01, 9, 30, 0, 0, paris),
+			time.Date(0000, 01, 01, 9, 45, 0, 0, paris),
+		}
 
 		// Then
-		for i, timeSlots := range times {
-			if timeSlots.Start != expectedStart {
-				t.Errorf("Expected start time for slot %d to be %v, but got %v", i, expectedStart, timeSlots.Start)
-			}
-			if timeSlots.End != expectedEnd {
-				t.Errorf("Expected end time for slot %d to be %v, but got %v", i, expectedEnd, timeSlots.End)
-			}
-
-			expectedStart = expectedEnd
-			expectedEnd = expectedEnd.Add(convertedDuration)
+		if !reflect.DeepEqual(expectedTimes, times) {
+			t.Errorf("Expected timeSlots to be %v, but got %v", expectedTimes, times)
 		}
 	})
 }
@@ -74,19 +49,20 @@ func TestGetTimeSlotsOfAShop(t *testing.T) {
 			},
 		}
 
+		paris, err := time.LoadLocation("Europe/Paris")
+		if err != nil {
+			panic(err)
+		}
+
 		expectedAvailabilities := []types.ShopAvailabilityWithTimeSlots{
 			{
 				DayOfWeek: "saturday",
 				Duration:  30,
 				StartTime: "09:00:00",
 				EndTime:   "10:00:00",
-				TimeSlots: []types.TimeSlot{
-					{
-						Start: time.Date(0000, 01, 01, 9, 0, 0, 0, time.UTC), End: time.Date(0000, 01, 01, 9, 30, 0, 0, time.UTC),
-					},
-					{
-						Start: time.Date(0000, 01, 01, 9, 30, 0, 0, time.UTC), End: time.Date(0000, 01, 01, 10, 0, 0, 0, time.UTC),
-					},
+				TimeSlots: []time.Time{
+					time.Date(0000, 01, 01, 9, 0, 0, 0, paris),
+					time.Date(0000, 01, 01, 9, 30, 0, 0, paris),
 				},
 			},
 		}

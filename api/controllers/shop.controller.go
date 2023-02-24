@@ -80,7 +80,7 @@ func GetAvailabilitiesOfAShop(id string) ([]types.ShopAvailability, types.HttpRe
 }
 
 func GetAppointmentsOfAShop(id string) ([]types.AppointmentDateTimeInfos, types.HttpResponse) {
-	resShopAppointments, errShopAppointments := database.DoQuery("SELECT appointment_date, start_time, end_time FROM appointments WHERE shop_id = ? ", id)
+	resShopAppointments, errShopAppointments := database.DoQuery("SELECT appointment_date, appointment_time, appointment_date_time FROM appointments WHERE shop_id = ? ", id)
 	var errorMessage types.HttpResponse
 	if errShopAppointments != nil {
 		errorMessage = utils.E503("Error while getting appointments of current shop from database", errShopAppointments)
@@ -89,7 +89,7 @@ func GetAppointmentsOfAShop(id string) ([]types.AppointmentDateTimeInfos, types.
 	var appointments []types.AppointmentDateTimeInfos
 	for resShopAppointments.Next() {
 		var appointment types.AppointmentDateTimeInfos
-		err := resShopAppointments.Scan(&appointment.AppointmentDate, &appointment.StartTime, &appointment.EndTime)
+		err := resShopAppointments.Scan(&appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime)
 		if err != nil {
 			errorMessage = utils.E503("Error while getting appointments attributes", err)
 		}

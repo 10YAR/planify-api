@@ -30,13 +30,14 @@ CREATE TABLE IF NOT EXISTS `appointments` (
                                `id` int PRIMARY KEY AUTO_INCREMENT,
                                `customer_name` varchar(255),
                                `appointment_date` date,
-                               `start_time` datetime,
-                               `end_time` datetime,
-                               `status` boolean,
+                               `appointment_time` time,
+                               `appointment_date_time` datetime,
                                `shop_id` int
 );
 
-ALTER TABLE `appointments` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
+ALTER TABLE `appointments`
+    ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
+    ADD UNIQUE KEY `appointment_date_time` (`appointment_date_time`);
 
 ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
 
@@ -55,5 +56,5 @@ INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `duration`, `st
     (4, 1, 'friday', 15, '09:00:00', '17:00:00'),
     (5, 1, 'saturday', 30, '09:00:00', '19:00:00');
 
-INSERT INTO `appointments` (`id`, `customer_name`, `appointment_date`, `start_time`, `end_time`, `status`, `shop_id`) VALUES
-    (1, 'test', '2023-02-03', '2023-02-04 16:30:00', '2023-02-04 17:00:00', 1, 1);
+INSERT INTO `appointments` (`id`, `customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`) VALUES
+    (1, 'test', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1);
