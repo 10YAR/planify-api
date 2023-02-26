@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `users` (
                         `id` int PRIMARY KEY AUTO_INCREMENT,
                         `firstName` varchar(255),
                         `lastName` varchar(255),
-                        `email` varchar(255),
+                        `email` varchar(255) UNIQUE NOT NULL,
                         `password` longtext,
                         `role` ENUM ('retailer', 'customer')
 );

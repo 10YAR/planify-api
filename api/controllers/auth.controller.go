@@ -87,7 +87,7 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	for res.Next() {
-		return c.JSON(types.HttpResponse{Status: 0, Message: "Email already exists", HttpCode: 200})
+		return c.JSON(types.HttpResponse{Status: 0, Message: "Email already exists", HttpCode: 400})
 	}
 
 	user.Password, _ = utils.HashPassword(user.Password)
