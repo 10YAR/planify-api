@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `users` (
                         `id` int PRIMARY KEY AUTO_INCREMENT,
                         `firstName` varchar(255),
                         `lastName` varchar(255),
-                        `email` varchar(255),
+                        `email` varchar(255) UNIQUE NOT NULL,
                         `password` longtext,
                         `role` ENUM ('retailer', 'customer')
 );
@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS `users` (
 CREATE TABLE IF NOT EXISTS `shops` (
                          `id` int PRIMARY KEY AUTO_INCREMENT,
                          `shop_name` varchar(255) UNIQUE NOT NULL,
-                         `address` varchar(255),
+                         `description` varchar(255),
+                         `address` varchar(255) UNIQUE NOT NULL,
+                         `phone_number` varchar(14),
                          `created_at` timestamp NOT NULL,
                          `user_id` int
 );
@@ -43,11 +45,13 @@ ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (
 
 ALTER TABLE `shops` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
-INSERT INTO `users` (`id`, `firstName`, `lastName`, `email`, `password`, `role`) VALUES
-    (1, 'Thomas', 'Evano', 'test', 'test', 'retailer');
+INSERT INTO `users` (`firstName`, `lastName`, `email`, `password`, `role`) VALUES
+    ('Thomas', 'Evano', 'thomas@mail.fr', 'thomas', 'retailer'),
+    ('Diyar', 'Bayrakli', 'dyia@mail.fr', 'dyiar', 'retailer');
 
-INSERT INTO `shops` (`id`, `shop_name`, `address`, `created_at`, `user_id`) VALUES
-    (1, 'test', 'test', '2023-02-03 16:02:34', 1);
+INSERT INTO `shops` (`shop_name`, `description`, `address`, `phone_number`, `created_at`, `user_id`) VALUES
+    ('Docteur Thomas', 'Médecin généraliste', '2 rue des médecins, 75000 Paris', '01 01 01 01 01', '2023-02-03 16:00:00', 1),
+    ('Docteur Diyar', 'Opthalmo', '1 rue des ophtalmo, 75000 Paris', '01 01 01 01 01', '2023-02-03 16:02:34', 1);
 
 INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `duration`, `start_time`, `end_time`) VALUES
     (1, 1, 'tuesday', 30, '09:00:00', '19:00:00'),
@@ -56,5 +60,5 @@ INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `duration`, `st
     (4, 1, 'friday', 15, '09:00:00', '17:00:00'),
     (5, 1, 'saturday', 30, '09:00:00', '19:00:00');
 
-INSERT INTO `appointments` (`id`, `customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`) VALUES
-    (1, 'test', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1);
+INSERT INTO `appointments` (`customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`) VALUES
+    ('Diyar Bayrakli', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1);
