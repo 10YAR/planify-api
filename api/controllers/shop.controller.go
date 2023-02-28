@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/database"
+	"api/repositories"
 	"api/types"
 	"api/utils"
 	"fmt"
@@ -9,41 +10,18 @@ import (
 )
 
 func GetShops(c *fiber.Ctx) error {
-	res, err := database.DoQuery("SELECT * FROM shops")
-	if err != nil {
-		return c.JSON(utils.E503("Error while getting shops", err))
-	}
-
-	var shops []types.Shop
-	for res.Next() {
-		var shop types.Shop
-		err := res.Scan(&shop.ID, &shop.ShopName, &shop.Address, &shop.CreatedAt, &shop.UserId)
-		if err != nil {
-			return c.JSON(utils.E503("Error while getting shops", err))
-		}
-
-		shops = append(shops, shop)
-	}
-
-	if len(shops) == 0 {
-		return c.JSON(utils.E503("No shops", err))
+	shops, err := repositories.GetShops()
+	if (err != types.HttpResponse{}) {
+		return c.JSON(err)
 	}
 	return c.JSON(shops)
 }
 
 func GetShop(c *fiber.Ctx) error {
 	id := c.Params("id")
-	resShop, errShop := database.DoQuery("SELECT shops.shop_name, shops.address FROM shops WHERE shops.id = ? ", id)
-	if errShop != nil {
-		return c.JSON(utils.E503("Error while getting Shop from database", errShop))
-	}
-
-	var shop types.ShopInfos
-	for resShop.Next() {
-		err := resShop.Scan(&shop.ShopName, &shop.Address)
-		if err != nil {
-			return c.JSON(utils.E503("Error while getting shops", err))
-		}
+	shop, err := repositories.GetShop(id)
+	if (err != types.HttpResponse{}) {
+		return c.JSON(err)
 	}
 
 	availabilities, _ := GetAvailabilitiesOfAShop(id)
@@ -51,8 +29,7 @@ func GetShop(c *fiber.Ctx) error {
 	availabilitiesWithTimeSlots := utils.GenerateTimeSlotsOfAShop(availabilities)
 
 	ShopInfoWithAvailabilityAppointmentsTimeSlots := types.ShopInfosAvailabilitiesAndAppointments{
-		ShopName:       shop.ShopName,
-		Address:        shop.Address,
+		ShopInfos:      shop.ShopInfos,
 		Availabilities: availabilitiesWithTimeSlots,
 		Appointments:   appointments,
 	}
@@ -101,6 +78,7 @@ func GetAppointmentsOfAShop(id string) ([]types.AppointmentDateTimeInfos, types.
 func CreateShop(c *fiber.Ctx) error {
 	// TODO
 	return c.SendString("Create an Shop")
+	//return c.SendStatus(200)
 }
 
 func UpdateShop(c *fiber.Ctx) error {

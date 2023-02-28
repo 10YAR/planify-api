@@ -1,21 +1,21 @@
 package types
 
 type Shop struct {
-	ID        int
-	ShopName  string
-	Address   string
+	ID int
+	ShopInfos
 	CreatedAt string
 	UserId    int
 }
 
 type ShopInfos struct {
-	ShopName string
-	Address  string
+	ShopName    string
+	Description string
+	Address     string
+	PhoneNumber string
 }
 
 type ShopInfosAvailabilitiesAndAppointments struct {
-	ShopName       string
-	Address        string
+	ShopInfos
 	Availabilities []ShopAvailabilityWithTimeSlots
 	Appointments   []AppointmentDateTimeInfos
 }
