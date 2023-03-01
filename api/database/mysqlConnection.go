@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"os"
@@ -70,7 +69,6 @@ func DoQueryRow(db *sql.DB, query string, params ...any) *sql.Row {
 func DoExec(db *sql.DB, query string, params ...any) (sql.Result, error) {
 	res, err := db.Exec(query, params...)
 	DeferClose(db)
-	fmt.Println("Executed query: ", res)
 	return res, err
 }
 

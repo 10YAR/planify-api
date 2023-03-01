@@ -11,10 +11,7 @@ import (
 )
 
 func GetShops(c *fiber.Ctx) error {
-	shops, err := repositories.GetShops()
-	if (err != types.HttpResponse{}) {
-		return c.JSON(err)
-	}
+	shops := repositories.GetShops()
 	return c.JSON(shops)
 }
 
@@ -22,10 +19,7 @@ func GetShop(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	db := utils.GetLocal[*sql.DB](c, "db")
-	shop, err := repositories.GetShop(db, id)
-	if (err != types.HttpResponse{}) {
-		return c.JSON(err)
-	}
+	shop := repositories.GetShop(db, id)
 
 	availabilities, _ := GetAvailabilitiesOfAShop(id)
 	appointments, _ := GetAppointmentsOfAShop(id)
@@ -79,19 +73,54 @@ func GetAppointmentsOfAShop(id string) ([]types.AppointmentDateTimeInfos, types.
 }
 
 func CreateShop(c *fiber.Ctx) error {
-	// TODO
-	return c.SendString("Create an Shop")
-	//return c.SendStatus(200)
+	db := utils.GetLocal[*sql.DB](c, "db")
+	shop := new(types.Shop)
+
+	if err := c.BodyParser(shop); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	errors := utils.ValidateStruct(*shop)
+	if errors != "" {
+		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
+	}
+
+	shopId := repositories.CreateShop(db, shop)
+	successMessage := fmt.Sprintf("Shop %s created successfully", shopId)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
 
 func UpdateShop(c *fiber.Ctx) error {
-	// TODO
 	id := c.Params("id")
-	return c.SendString(fmt.Sprintf("Update Shop ID %s", id))
+	db := utils.GetLocal[*sql.DB](c, "db")
+	shop := new(types.Shop)
+
+	if err := c.BodyParser(shop); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	errors := utils.ValidateStruct(*shop)
+	if errors != "" {
+		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
+	}
+
+	numberOfAffectedRows := repositories.UpdateShop(db, shop, id)
+	successMessage := fmt.Sprintf("%d rows updated", numberOfAffectedRows)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
 
 func DeleteShop(c *fiber.Ctx) error {
-	// TODO
 	id := c.Params("id")
-	return c.SendString(fmt.Sprintf("Delete Shop ID %s", id))
+	db := utils.GetLocal[*sql.DB](c, "db")
+
+	numberOfAffectedRows, err := repositories.DeleteShop(db, id)
+	if err != nil {
+		return c.JSON(utils.E400("Bad request :\n"+err.Error(), err))
+	}
+	successMessage := fmt.Sprintf("%d rows deleted", numberOfAffectedRows)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
