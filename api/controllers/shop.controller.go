@@ -11,7 +11,12 @@ import (
 )
 
 func GetShops(c *fiber.Ctx) error {
-	shops := repositories.GetShops()
+	shops, err := repositories.GetShops()
+
+	if err != nil {
+		return c.JSON(utils.E404("Shops not found", err))
+	}
+
 	return c.JSON(shops)
 }
 
@@ -19,7 +24,11 @@ func GetShop(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	db := utils.GetLocal[*sql.DB](c, "db")
-	shop := repositories.GetShop(db, id)
+	shop, err := repositories.GetShop(db, id)
+
+	if err != nil {
+		return c.JSON(utils.E404("Shop not found", err))
+	}
 
 	availabilities, _ := GetAvailabilitiesOfAShop(id)
 	appointments, _ := GetAppointmentsOfAShop(id)
@@ -87,8 +96,12 @@ func CreateShop(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
-	shopId := repositories.CreateShop(db, shop)
-	successMessage := fmt.Sprintf("Shop %s created successfully", shopId)
+	shopId, err := repositories.CreateShop(db, shop)
+	if err != nil {
+		return c.JSON(utils.E400("Bad request :\n"+err.Error(), err))
+	}
+
+	successMessage := fmt.Sprintf("Shop %d created successfully", shopId)
 	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
 
@@ -108,8 +121,12 @@ func UpdateShop(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
-	numberOfAffectedRows := repositories.UpdateShop(db, shop, id)
-	successMessage := fmt.Sprintf("%d rows updated", numberOfAffectedRows)
+	_, err := repositories.UpdateShop(db, shop, id)
+	if err != nil {
+		return c.JSON(utils.E400("Bad request :\n"+err.Error(), err))
+	}
+
+	successMessage := fmt.Sprintf("Shop %s updated successfully", id)
 	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
 
@@ -117,10 +134,11 @@ func DeleteShop(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := utils.GetLocal[*sql.DB](c, "db")
 
-	numberOfAffectedRows, err := repositories.DeleteShop(db, id)
+	_, err := repositories.DeleteShop(db, id)
 	if err != nil {
 		return c.JSON(utils.E400("Bad request :\n"+err.Error(), err))
 	}
-	successMessage := fmt.Sprintf("%d rows deleted", numberOfAffectedRows)
+
+	successMessage := fmt.Sprintf("Shop %s deleted successfully", id)
 	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }

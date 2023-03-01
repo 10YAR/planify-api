@@ -34,9 +34,10 @@ func (suite *ShopRepoTestSuite) TestGetShop() {
 		const shopId = "1"
 
 		// When
-		shop := repositories.GetShop(utils.DbTest, shopId)
+		shop, err := repositories.GetShop(utils.DbTest, shopId)
 
 		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
 		assert.Equal(suite.T(), expectedShop, shop, "Shop is not correct")
 	})
 }
@@ -61,9 +62,10 @@ func (suite *ShopRepoTestSuite) TestCreateShop() {
 		expectedLastId := int64(4)
 
 		// When
-		lastId := repositories.CreateShop(utils.DbTest, &shopToCreate)
+		lastId, err := repositories.CreateShop(utils.DbTest, &shopToCreate)
 
 		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
 		assert.Equal(suite.T(), expectedLastId, lastId, "Last id is not correct")
 	})
 }
@@ -115,9 +117,10 @@ func (suite *ShopRepoTestSuite) TestUpdateShop() {
 		expectedRowsAffected := int64(1)
 
 		// When
-		rowsAffected := repositories.UpdateShop(utils.DbTest, &shopToUpdate, ShopId)
+		rowsAffected, err := repositories.UpdateShop(utils.DbTest, &shopToUpdate, ShopId)
 
 		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
 		assert.Equal(suite.T(), expectedRowsAffected, rowsAffected, "Rows affected is not correct")
 	})
 }
@@ -132,26 +135,25 @@ func (suite *ShopRepoTestSuite) TestDeleteShop() {
 		expectedRowsAffected := int64(1)
 
 		// When
-		rowsAffected, _ := repositories.DeleteShop(utils.DbTest, shopId)
+		rowsAffected, err := repositories.DeleteShop(utils.DbTest, shopId)
 
 		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
 		assert.Equal(suite.T(), expectedRowsAffected, rowsAffected, "Rows affected is not correct")
 	})
 
-	//suite.T().Run("Shop with appointments", func(t *testing.T) {
-	//	pool, resource := utils.IntegrationTestSetup()
-	//	defer utils.IntegrationTestTeardown(pool, resource)
-	//	// Given
-	//	const shopId = 1
-	//	expectedOutput := "Error 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`mysql`.`appointments`, CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`))"
-	//
-	//	// When
-	//	_, err := repositories.DeleteShop(utils.DbTest, shopId)
-	//	fmt.Printf("err: %v", err)
-	//
-	//	// Then
-	//	assert.Equal(suite.T(), expectedOutput, err, "Rows affected is not correct")
-	//})
+	suite.T().Run("Shop with appointments", func(t *testing.T) {
+		pool, resource := utils.IntegrationTestSetup()
+		defer utils.IntegrationTestTeardown(pool, resource)
+		// Given
+		const shopId = "1"
+
+		// When
+		_, err := repositories.DeleteShop(utils.DbTest, shopId)
+
+		// Then
+		assert.NotNil(suite.T(), err, "It should return an error saying that the shop has appointments")
+	})
 }
 
 //func (suite *ShopRepoTestSuite) TestGetShopAppointments() {

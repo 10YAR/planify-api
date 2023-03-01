@@ -1,47 +1,32 @@
 package controllers
 
 import (
-	"api/database"
+	"api/repositories"
 	"api/types"
 	"api/utils"
+	"database/sql"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAppointments(c *fiber.Ctx) error {
-	res, err := database.DoQuery("SELECT * FROM appointments")
+	appointments, err := repositories.GetAppointments()
+
 	if err != nil {
-		return c.JSON(utils.E503("Error while getting appointments", err))
+		return c.JSON(utils.E404("Appointments not found", err))
 	}
-
-	var appointments []types.Appointment
-	for res.Next() {
-		var appointment types.Appointment
-		err := res.Scan(&appointment.ID, &appointment.CustomerName, &appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime, &appointment.ShopId)
-		if err != nil {
-			return c.JSON(utils.E503("Error while getting appointments", err))
-		}
-
-		appointments = append(appointments, appointment)
-	}
-
 	return c.JSON(appointments)
 }
 
 func GetAppointment(c *fiber.Ctx) error {
 	id := c.Params("id")
-	res, err := database.DoQuery("SELECT * FROM appointments WHERE id = ?", id)
+
+	db := utils.GetLocal[*sql.DB](c, "db")
+	appointment, err := repositories.GetAppointment(db, id)
+
 	if err != nil {
-		return c.JSON(utils.E503("Error while getting appointment", err))
+		return c.JSON(utils.E404("Appointment not found", err))
 	}
-
-	var appointment types.Appointment
-	for res.Next() {
-		err := res.Scan(&appointment.ID, &appointment.CustomerName, &appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime, &appointment.ShopId)
-		if err != nil {
-			return c.JSON(utils.E503("Error while getting appointment", err))
-		}
-	}
-
 	return c.JSON(appointment)
 }
 
@@ -59,12 +44,15 @@ func CreateAppointment(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
-	_, err := database.DoQuery(`INSERT INTO appointments (customer_name, appointment_date, appointment_time, appointment_date_time, shop_id) VALUES (?, ?, ?, CONCAT(?, ' ', ?), ?)`, appointment.CustomerName, appointment.AppointmentDate, appointment.AppointmentTime, appointment.AppointmentDate, appointment.AppointmentTime, appointment.ShopId)
+	db := utils.GetLocal[*sql.DB](c, "db")
+	appointmentId, err := repositories.CreateAppointment(db, appointment)
+
 	if err != nil {
-		return c.JSON(utils.E503("Error while creating appointment", err))
+		return c.JSON(utils.E400("Bad request :\n"+err.Error(), err))
 	}
 
-	return c.JSON(types.HttpResponse{Status: 1, Message: "Appointment created successfully", HttpCode: 200})
+	successMessage := fmt.Sprintf("Appointment %d created successfully", appointmentId)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
 
 func UpdateAppointment(c *fiber.Ctx) error {
@@ -83,21 +71,35 @@ func UpdateAppointment(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
-	_, err := database.DoQuery("UPDATE appointments SET customer_name = ?, appointment_date = ?, appointment_time = ?, appointment_date_time = ?, shop_id = ? WHERE id = ?", appointment.CustomerName, appointment.AppointmentDate, appointment.AppointmentTime, appointment.AppointmentDateTime, appointment.ShopId, id)
+	db := utils.GetLocal[*sql.DB](c, "db")
+	numberOfAffectedRows, err := repositories.UpdateAppointment(db, appointment, id)
+
 	if err != nil {
 		return c.JSON(utils.E503("Error while updating appointment", err))
 	}
 
-	return c.JSON(types.HttpResponse{Status: 1, Message: "Appointment updated successfully", HttpCode: 200})
+	if numberOfAffectedRows == 0 {
+		return c.JSON(utils.E404("Appointment not found", nil))
+	}
+
+	successMessage := fmt.Sprintf("Appointment %d updated successfully", numberOfAffectedRows)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
 
 func DeleteAppointment(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	_, err := database.DoQuery("DELETE FROM appointments WHERE id = ?", id)
+	db := utils.GetLocal[*sql.DB](c, "db")
+	rowsAffected, err := repositories.DeleteAppointment(db, id)
+
 	if err != nil {
 		return c.JSON(utils.E503("Error while deleting appointment", err))
 	}
 
-	return c.JSON(types.HttpResponse{Status: 1, Message: "Appointment deleted successfully", HttpCode: 200})
+	if rowsAffected == 0 {
+		return c.JSON(utils.E404("Appointment not found", nil))
+	}
+
+	successMessage := fmt.Sprintf("Appointment %d deleted successfully", rowsAffected)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
 }
