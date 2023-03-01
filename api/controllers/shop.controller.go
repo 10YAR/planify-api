@@ -5,6 +5,7 @@ import (
 	"api/repositories"
 	"api/types"
 	"api/utils"
+	"database/sql"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,7 +20,9 @@ func GetShops(c *fiber.Ctx) error {
 
 func GetShop(c *fiber.Ctx) error {
 	id := c.Params("id")
-	shop, err := repositories.GetShop(id)
+
+	db := utils.GetLocal[*sql.DB](c, "db")
+	shop, err := repositories.GetShop(db, id)
 	if (err != types.HttpResponse{}) {
 		return c.JSON(err)
 	}
