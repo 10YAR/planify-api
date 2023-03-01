@@ -49,22 +49,6 @@ func GetUser(db *sql.DB, id string) (types.User, error) {
 	return user, nil
 }
 
-func CreateUser(db *sql.DB, user *types.User) (int64, error) {
-	res, err := database.DoExec(db, "INSERT INTO users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password, user.Role)
-	if err != nil {
-		fmt.Printf("Error while creating user: %s\n", err)
-		return 0, err
-	}
-
-	lastId, err := res.LastInsertId()
-	if err != nil {
-		fmt.Printf("Error while getting last inserted id: %s\n", err)
-		return 0, err
-	}
-
-	return lastId, nil
-}
-
 func UpdateUser(db *sql.DB, user *types.User, id string) (int64, error) {
 	res, err := database.DoExec(db, "UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ?, role = ? WHERE id = ?", user.FirstName, user.LastName, user.Email, user.Password, user.Role, id)
 	if err != nil {

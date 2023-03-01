@@ -55,30 +55,6 @@ func (suite *UserRepoTestSuite) TestGetUser() {
 	})
 }
 
-func (suite *UserRepoTestSuite) TestCreateUser() {
-	pool, resource := utils.IntegrationTestSetup()
-	defer utils.IntegrationTestTeardown(pool, resource)
-
-	suite.T().Run("Create a user", func(t *testing.T) {
-		// Given
-		userToCreate := types.User{
-			FirstName: "testeur4",
-			LastName:  "testeur4",
-			Email:     "testeur4@test.fr",
-			Password:  "testeur4",
-			Role:      "customer",
-		}
-		expectedLastInsertedId := int64(4)
-
-		// When
-		lastInsertedId, err := repositories.CreateUser(utils.DbTest, &userToCreate)
-
-		// Then
-		assert.Nil(suite.T(), err, "Error is not nil")
-		assert.Equal(suite.T(), expectedLastInsertedId, lastInsertedId, "Last inserted id is not correct")
-	})
-}
-
 func (suite *UserRepoTestSuite) TestUpdateUser() {
 	pool, resource := utils.IntegrationTestSetup()
 	defer utils.IntegrationTestTeardown(pool, resource)

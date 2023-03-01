@@ -38,33 +38,6 @@ func GetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-func CreateUser(c *fiber.Ctx) error {
-	user := new(types.User)
-
-	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
-
-	errors := utils.ValidateStruct(*user)
-	if errors != "" {
-		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
-	}
-
-	user.Password, _ = utils.HashPassword(user.Password)
-
-	db := utils.GetLocal[*sql.DB](c, "db")
-	userId, err := repositories.CreateUser(db, user)
-
-	if err != nil {
-		return c.JSON(utils.E400("Bad request :\n"+err.Error(), err))
-	}
-
-	successMessage := fmt.Sprintf("User %d created successfully", userId)
-	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200})
-}
-
 func UpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
