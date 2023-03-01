@@ -1,6 +1,9 @@
 package main
 
 import (
+	"api/database"
+	"api/utils"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -25,6 +28,7 @@ func main() {
 }
 
 func GetFiberApp() *fiber.App {
+	db := database.Mysql()
 	app := fiber.New(fiber.Config{
 		Prefork:       false,
 		CaseSensitive: true,
@@ -35,5 +39,10 @@ func GetFiberApp() *fiber.App {
 		JSONDecoder:   json.Unmarshal,
 	})
 	app.Use(cors.New())
+	app.Use(func(c *fiber.Ctx) error {
+		utils.SetLocal[*sql.DB](c, "db", db)
+		// Go to next middleware:
+		return c.Next()
+	})
 	return app
 }

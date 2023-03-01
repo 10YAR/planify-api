@@ -31,8 +31,8 @@ func GetShops() ([]types.Shop, types.HttpResponse) {
 	return shops, errorMessage
 }
 
-func GetShop(id string) (types.Shop, types.HttpResponse) {
-	res := database.DoQueryRow("SELECT * FROM shops WHERE id = ?", id)
+func GetShop(db *sql.DB, id string) (types.Shop, types.HttpResponse) {
+	res := database.DoQueryRow(db, "SELECT * FROM shops WHERE id = ?", id)
 
 	var errorMessage types.HttpResponse
 	var shop types.Shop
@@ -44,4 +44,19 @@ func GetShop(id string) (types.Shop, types.HttpResponse) {
 		}
 	}
 	return shop, errorMessage
+}
+
+func CreateShop(db *sql.DB, shop types.Shop) (int64, types.HttpResponse) {
+	var errorMessage types.HttpResponse
+	res, err := database.DoExec(db, "INSERT INTO shops (shop_name, description, address, phone_number, created_at, user_id) VALUES (?, ?, ?, ?, ?, ?)", shop.ShopName, shop.Description, shop.Address, shop.PhoneNumber, shop.CreatedAt, shop.UserId)
+	if err != nil {
+		errorMessage = utils.E503("Error while creating shop", err)
+	}
+
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		errorMessage = utils.E503("Error while getting last inserted id", err)
+	}
+
+	return lastId, errorMessage
 }
