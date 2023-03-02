@@ -52,7 +52,6 @@ func DefineRoutes() *fiber.App {
 	// Users (Authenticated)
 	users.Get("/", middlewares.ProcessAuth, controllers.GetUsers)
 	users.Get("/:id", middlewares.ProcessAuth, controllers.GetUser)
-	users.Post("/", middlewares.ProcessAuth, controllers.CreateUser)
 	users.Patch("/:id", middlewares.ProcessAuth, controllers.UpdateUser)
 	users.Delete("/:id", middlewares.ProcessAuth, controllers.DeleteUser)
 

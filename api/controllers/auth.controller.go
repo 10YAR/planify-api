@@ -2,8 +2,11 @@ package controllers
 
 import (
 	"api/database"
+	"api/repositories"
 	"api/types"
 	"api/utils"
+	"database/sql"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"os"
@@ -25,21 +28,28 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Vérification de l'utilisateur
-	res, err := database.DoQuery("SELECT * FROM users WHERE email = ?", auth.Email)
-	if err != nil {
-		return c.JSON(utils.E503("Internal Server Error", err))
-	}
+	//res, err := database.DoQuery("SELECT * FROM users WHERE email = ?", auth.Email)
+	//if err != nil {
+	//	return c.JSON(utils.E503("Internal Server Error", err))
+	//}
+	//
+	//user := new(types.User)
+	//for res.Next() {
+	//	err := res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Role)
+	//	if err != nil {
+	//		return c.JSON(utils.E503("Internal Server Error", err))
+	//	}
+	//
+	//	if !utils.CheckPasswordHash(auth.Password, user.Password) {
+	//		return c.JSON(utils.E401("Unauthorized", nil))
+	//	}
+	//}
 
-	user := new(types.User)
-	for res.Next() {
-		err := res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Role)
-		if err != nil {
-			return c.JSON(utils.E503("Internal Server Error", err))
-		}
+	db := utils.GetLocal[*sql.DB](c, "db")
+	user, err := repositories.Login(db, auth.Email)
 
-		if !utils.CheckPasswordHash(auth.Password, user.Password) {
-			return c.JSON(utils.E401("Unauthorized", nil))
-		}
+	if !utils.CheckPasswordHash(auth.Password, user.Password) {
+		return c.JSON(utils.E401("Unauthorized", nil))
 	}
 
 	if user.ID == 0 {
@@ -63,7 +73,8 @@ func Login(c *fiber.Ctx) error {
 		return c.JSON(utils.E503("Internal Server Error", err))
 	}
 
-	return c.JSON(types.HttpResponse{Status: 1, Message: "Logged in succesfully", HttpCode: 200, Token: jwtToken})
+	successMessage := fmt.Sprintf("Bienvenue %s %s vous êtes maintenant connecté", user.FirstName, user.LastName)
+	return c.JSON(types.HttpResponse{Status: 1, Message: successMessage, HttpCode: 200, Token: jwtToken})
 }
 
 func Register(c *fiber.Ctx) error {
@@ -91,10 +102,12 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	user.Password, _ = utils.HashPassword(user.Password)
+
 	// Insertion de l'utilisateur
-	_, err = database.DoQuery("INSERT INTO users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password, user.Role)
-	if err != nil {
-		return c.JSON(utils.E503("Internal Server Error", err))
+	db := utils.GetLocal[*sql.DB](c, "db")
+	_, errDb := repositories.Register(db, user)
+	if errDb != nil {
+		return c.JSON(utils.E503("Internal Server Error", errDb))
 	}
 
 	return c.JSON(types.HttpResponse{Status: 1, Message: "User created successfully", HttpCode: 200})

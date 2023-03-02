@@ -28,7 +28,6 @@ func main() {
 }
 
 func GetFiberApp() *fiber.App {
-	db := database.Mysql()
 	app := fiber.New(fiber.Config{
 		Prefork:       false,
 		CaseSensitive: true,
@@ -40,6 +39,7 @@ func GetFiberApp() *fiber.App {
 	})
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
+		db := database.Mysql()
 		utils.SetLocal[*sql.DB](c, "db", db)
 		// Go to next middleware:
 		return c.Next()

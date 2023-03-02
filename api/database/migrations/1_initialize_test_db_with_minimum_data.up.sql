@@ -50,7 +50,8 @@ INSERT INTO `users` (`firstName`, `lastName`, `email`, `password`, `role`) VALUE
 
 INSERT INTO `shops` (`shop_name`, `description`, `address`, `phone_number`, `created_at`, `user_id`) VALUES
     ('Dentest', 'dentiste test', '1 rue des dentistes, 00000 TestCity', '00 00 00 00 00',  '2023-02-03 16:02:34', 1),
-    ('orltest', 'ORL test', '1 rue des orls, 00000 TestCity', '00 00 00 00 01', '2023-02-28 11:00:00', 2);
+    ('orltest', 'ORL test', '1 rue des orls, 00000 TestCity', '00 00 00 00 01', '2023-02-28 11:00:00', 2),
+    ('shop3', 'shop sans appointments', '1 rue des shop3, 00000 TestCity', '00 00 00 00 02', '2023-02-28 11:00:00', 2);
 
 INSERT INTO `shop_availability` (`shop_id`, `day_of_week`, `duration`, `start_time`, `end_time`) VALUES
     (1, 'tuesday', 15, '09:00:00', '19:00:00'),
