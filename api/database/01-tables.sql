@@ -1,3 +1,5 @@
+-- Last update: 2021-02-03 12:33
+
 USE `planify`;
 
 CREATE TABLE IF NOT EXISTS `users` (
