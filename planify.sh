@@ -12,10 +12,10 @@ then
   if [ "$SHAONESUM" != "$SHATWOSUM" ];
   then
     export $(grep -v '^#' .env | xargs)
-    DB_HOST=${DB_HOST//$'\n'/}
-    DB_USER=${DB_USER//$'\n'/}
-    DB_PASSWORD=${DB_PASSWORD//$'\n'/}
-    DB_NAME=${DB_NAME//$'\n'/}
+    DB_HOST=${DB_HOST:0:len-2}
+    DB_USER=${DB_USER:0:len-2}
+    DB_PASSWORD=${DB_PASSWORD:0:len-2}
+    DB_NAME=${DB_NAME:0:len-2}
 
     echo "Migration file changed, recreating database..."
     mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD $DB_NAME < api/database/02-tables.down.sql
