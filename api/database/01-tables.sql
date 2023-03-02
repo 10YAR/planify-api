@@ -49,7 +49,7 @@ ALTER TABLE `shops` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 INSERT INTO `users` (`firstName`, `lastName`, `email`, `password`, `role`) VALUES
     ('Thomas', 'Evano', 'thomas@mail.fr', 'thomas', 'retailer'),
-    ('Diyar', 'Bayrakli', 'dyia@mail.fr', 'dyiar', 'retailer');
+    ('Diyar', 'Bayrakli', 'diyar@mail.fr', 'diyar', 'retailer');
 
 INSERT INTO `shops` (`shop_name`, `description`, `address`, `phone_number`, `created_at`, `user_id`) VALUES
     ('Docteur Thomas', 'Médecin généraliste', '2 rue des médecins, 75000 Paris', '01 01 01 01 01', '2023-02-03 16:00:00', 1),
