@@ -25,9 +25,9 @@ then
   fi
   echo "Building app..."
   screen -S planify -p 0 -X stuff "^C"
-  screen -S planify -p 0 -X stuff "rm planifyApi && cd api && go build -v -o ../planifyApi . ^M"
-  screen -S planify -p 0 -X stuff "cd ../ && chmod +x planifyApi ^M"
-  screen -S planify -p 0 -X stuff "./planifyApi^M"
+  screen -S planify -p 0 -X stuff "rm planifyApp && cd api && go build -v -o ../planifyApp . ^M"
+  screen -S planify -p 0 -X stuff "cd ../ && chmod +x planifyApp ^M"
+  screen -S planify -p 0 -X stuff "./planifyApp^M"
   sleep 3
   echo "Build finished"
 else
