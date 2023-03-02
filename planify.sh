@@ -1,4 +1,5 @@
 #!/bin/bash
+
 PATH=$PATH:/usr/local/go/bin
 cd /home/planify
 SHAONESUM=$(sha1sum api/database/01-tables.sql)
@@ -19,8 +20,8 @@ then
     DB_PORT=${DB_PORT:0:-1}
 
     echo "Migration file changed, recreating database..."
-    mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD --port=$DB_PORT $DB_NAME < api/database/02-tables.down.sql
-    mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD --port=$DB_PORT $DB_NAME < api/database/01-tables.sql
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} --port=${DB_PORT} ${DB_NAME} < api/database/02-tables.down.sql
+    mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} --port=${DB_PORT} ${DB_NAME} < api/database/01-tables.sql
     echo "Migration finished"
   fi
 
