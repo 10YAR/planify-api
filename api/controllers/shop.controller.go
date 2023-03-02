@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"api/database"
 	"api/repositories"
 	"api/types"
 	"api/utils"
@@ -11,7 +10,8 @@ import (
 )
 
 func GetShops(c *fiber.Ctx) error {
-	shops, err := repositories.GetShops()
+	db := utils.GetLocal[*sql.DB](c, "db")
+	shops, err := repositories.GetShops(db)
 
 	if err != nil {
 		return c.JSON(utils.E404("Shops not found", err))
@@ -30,8 +30,8 @@ func GetShop(c *fiber.Ctx) error {
 		return c.JSON(utils.E404("Shop not found", err))
 	}
 
-	availabilities, _ := GetAvailabilitiesOfAShop(id)
-	appointments, _ := GetAppointmentsOfAShop(id)
+	availabilities, _ := repositories.GetShopAvailabilities(db, id)
+	appointments, _ := repositories.GetShopAppointments(db, id)
 	availabilitiesWithTimeSlots := utils.GenerateTimeSlotsOfAShop(availabilities)
 
 	ShopInfoWithAvailabilityAppointmentsTimeSlots := types.ShopInfosAvailabilitiesAndAppointments{
@@ -43,42 +43,41 @@ func GetShop(c *fiber.Ctx) error {
 	return c.JSON(ShopInfoWithAvailabilityAppointmentsTimeSlots)
 }
 
-func GetAvailabilitiesOfAShop(id string) ([]types.ShopAvailability, types.HttpResponse) {
-	resShopAvailability, errShopAvailability := database.DoQuery("SELECT shop_availability.day_of_week, shop_availability.duration, shop_availability.start_time, shop_availability.end_time FROM shops INNER JOIN shop_availability ON shops.id = shop_availability.shop_id WHERE shops.id = ? ", id)
-	var errorMessage types.HttpResponse
-	if errShopAvailability != nil {
-		errorMessage = utils.E503("Error while getting ShopAvailability from database", errShopAvailability)
+//func GetShopAvailabilities(c *fiber.Ctx) error {
+//	id := c.Params("id")
+//	db := utils.GetLocal[*sql.DB](c, "db")
+//	shopAvailabilities, errShopAvailabilities := repositories.GetShopAvailabilities(db, id)
+//
+//	if errShopAvailabilities != nil {
+//		return c.JSON(utils.E404("ShopAvailabilities not found", errShopAvailabilities))
+//	}
+//
+//	return c.JSON(shopAvailabilities)
+//}
+
+func GetShopAppointments(c *fiber.Ctx) error {
+	id := c.Params("shopId")
+	db := utils.GetLocal[*sql.DB](c, "db")
+	shopAppointments, errShopAppointments := repositories.GetShopAppointments(db, id)
+
+	if errShopAppointments != nil {
+		return c.JSON(utils.E404("ShopAppointments not found", errShopAppointments))
 	}
 
-	var availabilities []types.ShopAvailability
-	for resShopAvailability.Next() {
-		var shopAvailability types.ShopAvailability
-		err := resShopAvailability.Scan(&shopAvailability.DayOfWeek, &shopAvailability.Duration, &shopAvailability.StartTime, &shopAvailability.EndTime)
-		if err != nil {
-			errorMessage = utils.E503("Error while getting availabilities attributes", err)
-		}
-		availabilities = append(availabilities, shopAvailability)
-	}
-	return availabilities, errorMessage
+	return c.JSON(shopAppointments)
 }
 
-func GetAppointmentsOfAShop(id string) ([]types.AppointmentDateTimeInfos, types.HttpResponse) {
-	resShopAppointments, errShopAppointments := database.DoQuery("SELECT appointment_date, appointment_time, appointment_date_time FROM appointments WHERE shop_id = ? ", id)
-	var errorMessage types.HttpResponse
-	if errShopAppointments != nil {
-		errorMessage = utils.E503("Error while getting appointments of current shop from database", errShopAppointments)
+func GetShopsByUserId(c *fiber.Ctx) error {
+	userId := c.Params("userId")
+
+	db := utils.GetLocal[*sql.DB](c, "db")
+	shops, err := repositories.GetShopsByUserId(db, userId)
+
+	if err != nil {
+		return c.JSON(utils.E404("Shops not found", err))
 	}
 
-	var appointments []types.AppointmentDateTimeInfos
-	for resShopAppointments.Next() {
-		var appointment types.AppointmentDateTimeInfos
-		err := resShopAppointments.Scan(&appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime)
-		if err != nil {
-			errorMessage = utils.E503("Error while getting appointments attributes", err)
-		}
-		appointments = append(appointments, appointment)
-	}
-	return appointments, errorMessage
+	return c.JSON(shops)
 }
 
 func CreateShop(c *fiber.Ctx) error {

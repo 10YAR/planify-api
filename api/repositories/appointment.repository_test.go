@@ -13,18 +13,18 @@ type AppointmentRepoTestSuite struct {
 	suite.Suite
 }
 
-//func (suite *AppointmentRepoTestSuite) TestGetAppointments() {
-//	pool, resource := utils.IntegrationTestSetup()
-//	defer utils.IntegrationTestTeardown(pool, resource)
-//
-//	suite.T().Run("Get all appointments", func(t *testing.T) {
-//		// Given
-//
-//		// When
-//
-//		// Then
-//	})
-//}
+func (suite *AppointmentRepoTestSuite) TestGetAppointments() {
+	pool, resource := utils.IntegrationTestSetup()
+	defer utils.IntegrationTestTeardown(pool, resource)
+
+	suite.T().Run("Get all appointments", func(t *testing.T) {
+		// Given
+
+		// When
+
+		// Then
+	})
+}
 
 func (suite *AppointmentRepoTestSuite) TestGetAppointment() {
 	pool, resource := utils.IntegrationTestSetup()
