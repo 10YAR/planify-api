@@ -1,13 +1,35 @@
 #!/bin/bash
 PATH=$PATH:/usr/local/go/bin
-GITRES=$(cd /home/planify && git pull)
-if [ "$GITRES" != "Déjà à jour." ];
+cd /home/planify
+SHAONESUM=$(sha1sum api/database/01-tables.sql)
+GITRES=$(git pull)
+echo $GITRES
+if [ "$GITRES" != "Already up to date." ];
 then
-  echo "Updates detected, building app..."
+  echo "Updates detected"
+  SHATWOSUM=$(sha1sum api/database/01-tables.sql)
+  if [ "$SHAONESUM" != "$SHATWOSUM" ];
+  then
+
+    eval "$(grep ^DB_HOST= .env)"
+    eval "$(grep ^DB_PORT= .env)"
+    eval "$(grep ^DB_USER= .env)"
+    eval "$(grep ^DB_PASSWORD= .env)"
+    eval "$(grep ^DB_NAME= .env)"
+
+    echo "Migration file changed, recreating database..."
+    mysql -h $DB_HOST -u $DB_USER -p $DB_PASSWORD --port=$DB_PORT $DB_NAME < api/database/02-tables.down.sql
+    mysql -h $DB_HOST -u $DB_USER -p $DB_PASSWORD --port=$DB_PORT $DB_NAME < api/database/01-tables.sql
+    echo "Migration finished"
+    
+  fi
+  echo "Building app..."
   screen -S planify -p 0 -X stuff "^C"
-  screen -S planify -p 0 -X stuff "go build -v -o ./planifyApi api^M"
+  screen -S planify -p 0 -X stuff "rm planifyApi && cd api && go build -v -o ../planifyApi . ^M"
+  screen -S planify -p 0 -X stuff "cd ../ && chmod +x planifyApi ^M"
   screen -S planify -p 0 -X stuff "./planifyApi^M"
-  echo "Build successful. App launched."
+  sleep 3
+  echo "Build finished"
 else
-  echo "No updates, no need to build"
+  echo "App is up to date, exiting"
 fi
