@@ -10,7 +10,8 @@ import (
 )
 
 func GetAppointments(c *fiber.Ctx) error {
-	appointments, err := repositories.GetAppointments()
+	db := utils.GetLocal[*sql.DB](c, "db")
+	appointments, err := repositories.GetAppointments(db)
 
 	if err != nil {
 		return c.JSON(utils.E404("Appointments not found", err))

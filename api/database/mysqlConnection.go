@@ -50,31 +50,17 @@ func Mysql() *sql.DB {
 	return db
 }
 
-func DoQuery(query string, params ...any) (*sql.Rows, error) {
-	db := Mysql()
+func DoQuery(db *sql.DB, query string, params ...any) (*sql.Rows, error) {
 	res, err := db.Query(query, params...)
-	if err != nil {
-		return res, err
-	}
-	DeferClose(db)
-	return res, nil
+	return res, err
 }
 
 func DoQueryRow(db *sql.DB, query string, params ...any) *sql.Row {
 	res := db.QueryRow(query, params...)
-	DeferClose(db)
 	return res
 }
 
 func DoExec(db *sql.DB, query string, params ...any) (sql.Result, error) {
 	res, err := db.Exec(query, params...)
-	DeferClose(db)
 	return res, err
-}
-
-func DeferClose(db *sql.DB) {
-	err := db.Close()
-	if err != nil {
-		panic(err)
-	}
 }

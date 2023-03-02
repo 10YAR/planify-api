@@ -7,8 +7,8 @@ import (
 	"fmt"
 )
 
-func GetAppointments() ([]types.Appointment, error) {
-	res, err := database.DoQuery("SELECT * FROM appointments")
+func GetAppointments(db *sql.DB) ([]types.Appointment, error) {
+	res, err := database.DoQuery(db, "SELECT * FROM appointments")
 
 	if err != nil {
 		fmt.Printf("Error while getting appointments: %s\n", err)

@@ -7,8 +7,8 @@ import (
 	"fmt"
 )
 
-func GetUsers() ([]types.User, error) {
-	rows, err := database.DoQuery("SELECT * FROM users")
+func GetUsers(db *sql.DB) ([]types.User, error) {
+	rows, err := database.DoQuery(db, "SELECT * FROM users")
 
 	if err != nil {
 		fmt.Printf("Error while getting users from database: %s\n", err)

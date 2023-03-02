@@ -79,6 +79,7 @@ func Login(c *fiber.Ctx) error {
 
 func Register(c *fiber.Ctx) error {
 	user := new(types.User)
+	db := utils.GetLocal[*sql.DB](c, "db")
 
 	err := c.BodyParser(user)
 	if err != nil {
@@ -92,7 +93,7 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	// Vérification de l'utilisateur
-	res, err := database.DoQuery("SELECT * FROM users WHERE email = ?", user.Email)
+	res, err := database.DoQuery(db, "SELECT * FROM users WHERE email = ?", user.Email)
 	if err != nil {
 		return c.JSON(utils.E503("Internal Server Error", err))
 	}
@@ -104,7 +105,6 @@ func Register(c *fiber.Ctx) error {
 	user.Password, _ = utils.HashPassword(user.Password)
 
 	// Insertion de l'utilisateur
-	db := utils.GetLocal[*sql.DB](c, "db")
 	_, errDb := repositories.Register(db, user)
 	if errDb != nil {
 		return c.JSON(utils.E503("Internal Server Error", errDb))

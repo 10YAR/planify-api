@@ -11,7 +11,8 @@ import (
 )
 
 func GetUsers(c *fiber.Ctx) error {
-	users, err := repositories.GetUsers()
+	db := utils.GetLocal[*sql.DB](c, "db")
+	users, err := repositories.GetUsers(db)
 
 	if err != nil {
 		return c.JSON(utils.E404("Users not found", err))
@@ -22,7 +23,8 @@ func GetUsers(c *fiber.Ctx) error {
 
 func GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
-	res, err := database.DoQuery("SELECT * FROM users WHERE id = ?", id)
+	db := utils.GetLocal[*sql.DB](c, "db")
+	res, err := database.DoQuery(db, "SELECT * FROM users WHERE id = ?", id)
 	if err != nil {
 		return c.JSON(utils.E503("Error while getting user", err))
 	}
@@ -54,7 +56,8 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.JSON(utils.E400("Bad request :\n"+errors, nil))
 	}
 
-	res, err := database.DoQuery("SELECT * FROM users WHERE id = ?", id)
+	db := utils.GetLocal[*sql.DB](c, "db")
+	res, err := database.DoQuery(db, "SELECT * FROM users WHERE id = ?", id)
 	if err != nil {
 		return c.JSON(utils.E503("Error while getting user", err))
 	}
@@ -71,7 +74,6 @@ func UpdateUser(c *fiber.Ctx) error {
 		user.Password, _ = utils.HashPassword(user.Password)
 	}
 
-	db := utils.GetLocal[*sql.DB](c, "db")
 	_, errRepo := repositories.UpdateUser(db, user, id)
 
 	if err != nil {
