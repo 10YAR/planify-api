@@ -13,21 +13,9 @@ then
   then
     export $(grep -v '^#' .env | xargs)
 
-    echo $DB_HOST
-    echo $DB_USER
-    echo $DB_PASSWORD
-    echo $DB_NAME
-    echo $DB_PORT
-
-    F_DB_HOST=$(DB_HOST:0:-1)
-    F_DB_USER=$(DB_USER:0:-1)
-    F_DB_PASSWORD=$(DB_PASSWORD:0:-1)
-    F_DB_NAME=$(DB_NAME:0:-1)
-    F_DB_PORT=$(DB_PORT:0:-1)
-
     echo "Migration file changed, recreating database..."
-    mysql -h$F_DB_HOST -u$F_DB_USER -p$F_DB_PASSWORD --port=$F_DB_PORT $F_DB_NAME < api/database/02-tables.down.sql
-    mysql -h$F_DB_HOST -u$F_DB_USER -p$F_DB_PASSWORD --port=$F_DB_PORT $F_DB_NAME < api/database/01-tables.sql
+    mysql -h $DB_HOST -u $DB_USER -p $DB_PASSWORD $DB_NAME < api/database/02-tables.down.sql
+    mysql -h $DB_HOST -u $DB_USER -p $DB_PASSWORD $DB_NAME < api/database/01-tables.sql
     echo "Migration finished"
   fi
 
