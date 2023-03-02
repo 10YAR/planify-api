@@ -14,8 +14,8 @@ then
     export $(grep -v '^#' .env | xargs)
 
     echo "Migration file changed, recreating database..."
-    mysql -h $DB_HOST -u $DB_USER -p $DB_PASSWORD $DB_NAME < api/database/02-tables.down.sql
-    mysql -h $DB_HOST -u $DB_USER -p $DB_PASSWORD $DB_NAME < api/database/01-tables.sql
+    mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD $DB_NAME < api/database/02-tables.down.sql
+    mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD $DB_NAME < api/database/01-tables.sql
     echo "Migration finished"
   fi
 
