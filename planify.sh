@@ -11,7 +11,7 @@ then
   SHATWOSUM=$(sha1sum api/database/01-tables.sql)
   if [ "$SHAONESUM" != "$SHATWOSUM" ];
   then
-    export "$(grep -vE "^(#.*|\s*)$" .env)"
+    set -o allexport; source .env; set +o allexport
 
     echo "Migration file changed, recreating database..."
     mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD $DB_NAME < api/database/02-tables.down.sql
