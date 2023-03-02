@@ -48,7 +48,7 @@ ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (
 ALTER TABLE `shops` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 INSERT INTO `users` (`firstName`, `lastName`, `email`, `password`, `role`) VALUES
-    ('Thomas', 'Evano', 'thomas@mail.fr', 'thomas', 'retailer'),
+    ('Thomas', 'Evano', 'thomas@mail.fr', '$2a$10$GdAmHWozxcNIJydWceSnguflswqJtqBWXv.0iSItjWP1ssrXKxisy', 'retailer'),
     ('Diyar', 'Bayrakli', 'diyar@mail.fr', 'diyar', 'retailer');
 
 INSERT INTO `shops` (`shop_name`, `description`, `address`, `phone_number`, `created_at`, `user_id`) VALUES
