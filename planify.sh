@@ -11,7 +11,11 @@ then
   SHATWOSUM=$(sha1sum api/database/01-tables.sql)
   if [ "$SHAONESUM" != "$SHATWOSUM" ];
   then
-    export $(grep -v '^#' .env | xargs)
+
+    if [ -f .env ]; then
+      export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)
+    fi
+
     DB_HOST=${DB_HOST:0:len-2}
     DB_USER=${DB_USER:0:len-2}
     DB_PASSWORD=${DB_PASSWORD:0:len-2}
