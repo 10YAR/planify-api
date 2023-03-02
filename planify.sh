@@ -13,6 +13,12 @@ then
   then
     export $(grep -v '^#' .env | xargs)
 
+    echo $DB_HOST
+    echo $DB_USER
+    echo $DB_PASSWORD
+    echo $DB_NAME
+    echo $DB_PORT
+
     F_DB_HOST=$(DB_HOST:0:-1)
     F_DB_USER=$(DB_USER:0:-1)
     F_DB_PASSWORD=$(DB_PASSWORD:0:-1)
