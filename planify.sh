@@ -4,7 +4,7 @@ cd /home/planify
 SHAONESUM=$(sha1sum api/database/01-tables.sql)
 GITRES=$(git pull)
 echo $GITRES
-if [ "$GITRES" = "Already up to date." ];
+if [ "$GITRES" != "Already up to date." ];
 then
   echo "Updates detected"
   SHATWOSUM=$(sha1sum api/database/01-tables.sql)
