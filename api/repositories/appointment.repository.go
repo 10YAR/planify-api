@@ -50,7 +50,7 @@ func GetAppointment(db *sql.DB, id string) (types.Appointment, error) {
 }
 
 func CreateAppointment(db *sql.DB, appointment *types.Appointment) (int64, error) {
-	res, err := database.DoExec(db, "INSERT INTO appointments (customer_name, appointment_date, appointment_time, appointment_date_time, shop_id) VALUES (?, ?, ?, ?, ?)", appointment.CustomerName, appointment.AppointmentDate, appointment.AppointmentTime, appointment.AppointmentDateTime, appointment.ShopId)
+	res, err := database.DoExec(db, "INSERT INTO appointments (customer_name, appointment_date, appointment_time, appointment_date_time, shop_id, user_id, user_email) VALUES (?, ?, ?, CONCAT(?, ' ', ?), ?, ?, ?)", appointment.CustomerName, appointment.AppointmentDate, appointment.AppointmentTime, appointment.AppointmentDate, appointment.AppointmentTime, appointment.ShopId, appointment.UserId, appointment.Email)
 	if err != nil {
 		fmt.Printf("Error while creating appointment: %s\n", err)
 		return 0, err

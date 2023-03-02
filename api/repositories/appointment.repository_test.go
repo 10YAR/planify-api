@@ -60,13 +60,14 @@ func (suite *AppointmentRepoTestSuite) TestCreateAppointment() {
 	suite.T().Run("Create an appointment", func(t *testing.T) {
 		// Given
 		appointment := types.Appointment{
-			CustomerName: "testeur_sans_compte_3",
+			CustomerName: "testeur3 testeur3",
 			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
-				AppointmentDate:     "2023-03-03",
-				AppointmentTime:     "11:30:00",
-				AppointmentDateTime: "2023-03-03 11:30:00",
+				AppointmentDate: "2023-03-03",
+				AppointmentTime: "11:30:00",
 			},
 			ShopId: 1,
+			UserId: 3,
+			Email:  "testeur3@test.fr",
 		}
 		expectedLastId := int64(4)
 
