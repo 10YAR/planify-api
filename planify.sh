@@ -16,10 +16,10 @@ then
       export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)
     fi
 
-    DB_HOST=${DB_HOST:0:len-2}
-    DB_USER=${DB_USER:0:len-2}
-    DB_PASSWORD=${DB_PASSWORD:0:len-2}
-    DB_NAME=${DB_NAME:0:len-2}
+    DB_HOST=${DB_HOST:0:len-1}
+    DB_USER=${DB_USER:0:len-1}
+    DB_PASSWORD=${DB_PASSWORD:0:len-1}
+    DB_NAME=${DB_NAME:0:len-1}
 
     echo "Migration file changed, recreating database..."
     mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD $DB_NAME < api/database/02-tables.down.sql
