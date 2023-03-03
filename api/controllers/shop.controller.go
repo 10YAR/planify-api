@@ -82,7 +82,7 @@ func GetShopsByUserId(c *fiber.Ctx) error {
 
 func CreateShop(c *fiber.Ctx) error {
 	db := utils.GetLocal[*sql.DB](c, "db")
-	shop := new(types.Shop)
+	shop := new(types.ShopAvailabilities)
 
 	if err := c.BodyParser(shop); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

@@ -210,16 +210,28 @@ func (suite *ShopRepoTestSuite) TestCreateShop() {
 
 	suite.T().Run("Create a shop", func(t *testing.T) {
 		// Given
-		ShopInfos := types.ShopInfos{
-			ShopName:    "ShopTest",
-			Description: "shop test",
-			Address:     "1 rue test, 00000 TestCity",
-			PhoneNumber: "00 00 00 00 00",
-		}
-		shopToCreate := types.Shop{
-			ShopInfos: ShopInfos,
-			CreatedAt: "2023-03-01 11:00:00",
-			UserId:    1,
+		shopToCreate := types.ShopAvailabilities{
+			Shop: types.Shop{
+				ShopInfos: types.ShopInfos{
+					ShopName:    "ShopTest",
+					Description: "shop test",
+					Address:     "1 rue test, 00000 TestCity",
+					PhoneNumber: "00 00 00 00 00",
+				},
+				CreatedAt: "2023-03-01 11:00:00",
+				UserId:    1,
+			},
+			Availabilities: []types.ShopAvailabilityWithShopId{
+				{
+					ShopAvailability: types.ShopAvailability{
+						DayOfWeek: "monday",
+						Duration:  15,
+						StartTime: "09:00:00",
+						EndTime:   "19:00:00",
+					},
+					ShopId: 1,
+				},
+			},
 		}
 		expectedLastId := int64(4)
 

@@ -127,8 +127,16 @@ func GetShopsByUserId(db *sql.DB, id string) ([]types.Shop, error) {
 	return shops, nil
 }
 
-func CreateShop(db *sql.DB, shop *types.Shop) (int64, error) {
-	res, err := database.DoExec(db, "INSERT INTO shops (shop_name, description, address, phone_number, user_id) VALUES (?, ?, ?, ?, ?)", shop.ShopName, shop.Description, shop.Address, shop.PhoneNumber, shop.UserId)
+func CreateShop(db *sql.DB, shopAvailabilities *types.ShopAvailabilities) (int64, error) {
+	res, err := database.DoExec(db, "INSERT INTO shops (shop_name, description, address, phone_number, user_id) VALUES (?, ?, ?, ?, ?)", shopAvailabilities.ShopName, shopAvailabilities.Description, shopAvailabilities.Address, shopAvailabilities.PhoneNumber, shopAvailabilities.UserId)
+
+	for _, availability := range shopAvailabilities.Availabilities {
+		_, errShopAvailability := database.DoExec(db, "INSERT INTO shop_availability (day_of_week, duration, start_time, end_time, shop_id) VALUES (?, ?, ?, ?, ?)", availability.DayOfWeek, availability.Duration, availability.StartTime, availability.EndTime, availability.ShopId)
+		if errShopAvailability != nil {
+			fmt.Printf("Error while creating shop availability: %s\n", err)
+			return 0, err
+		}
+	}
 	if err != nil {
 		fmt.Printf("Error while creating shop: %s\n", err)
 		return 0, err

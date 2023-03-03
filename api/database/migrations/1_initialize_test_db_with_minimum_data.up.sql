@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS shops (
     `description` varchar(255),
     `address` varchar(255) UNIQUE NOT NULL,
     `phone_number` varchar(14),
-    `created_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `user_id` int
 );
 

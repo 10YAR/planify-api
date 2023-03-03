@@ -14,6 +14,11 @@ type ShopInfos struct {
 	PhoneNumber string
 }
 
+type ShopAvailabilities struct {
+	Shop
+	Availabilities []ShopAvailabilityWithShopId
+}
+
 type ShopInfosAvailabilitiesAndAppointments struct {
 	ShopInfos
 	Availabilities []ShopAvailabilityWithTimeSlots
