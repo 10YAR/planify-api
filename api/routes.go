@@ -50,12 +50,15 @@ func DefineRoutes() *fiber.App {
 	appointments.Delete("/:id", middlewares.ProcessAuth, controllers.DeleteAppointment)
 
 	// Users (Authenticated)
+	users.Get("/appointments/:userId", middlewares.ProcessAuth, controllers.GetUserAppointments)
+	users.Get("/shops/:userId", middlewares.ProcessAuth, controllers.GetShopsByUserId)
 	users.Get("/", middlewares.ProcessAuth, controllers.GetUsers)
 	users.Get("/:id", middlewares.ProcessAuth, controllers.GetUser)
 	users.Patch("/:id", middlewares.ProcessAuth, controllers.UpdateUser)
 	users.Delete("/:id", middlewares.ProcessAuth, controllers.DeleteUser)
 
 	// Shops (Authenticated)
+	shops.Get("/appointments/:shopId", middlewares.ProcessAuth, controllers.GetShopAppointments)
 	shops.Post("/", middlewares.ProcessAuth, controllers.CreateShop)
 	shops.Patch("/:id", middlewares.ProcessAuth, controllers.UpdateShop)
 	shops.Delete("/:id", middlewares.ProcessAuth, controllers.DeleteShop)

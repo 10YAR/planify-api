@@ -17,5 +17,5 @@ type ShopInfos struct {
 type ShopInfosAvailabilitiesAndAppointments struct {
 	ShopInfos
 	Availabilities []ShopAvailabilityWithTimeSlots
-	Appointments   []AppointmentDateTimeInfos
+	Appointments   []Appointment
 }

@@ -7,11 +7,11 @@ import (
 	"fmt"
 )
 
-func GetShops() ([]types.Shop, error) {
-	res, err := database.DoQuery("SELECT * FROM shops")
+func GetShops(db *sql.DB) ([]types.Shop, error) {
+	res, err := database.DoQuery(db, "SELECT * FROM shops")
 
 	if err != nil {
-		fmt.Printf("Error while getting shops: %s\n", err)
+		fmt.Printf("Error while getting shops from database: %s\n", err)
 		return []types.Shop{}, err
 	}
 
@@ -20,7 +20,7 @@ func GetShops() ([]types.Shop, error) {
 		var shop types.Shop
 		err := res.Scan(&shop.ID, &shop.ShopName, &shop.Description, &shop.Address, &shop.PhoneNumber, &shop.CreatedAt, &shop.UserId)
 		if err != nil {
-			fmt.Printf("Error while getting shops: %s\n", err)
+			fmt.Printf("Error while scanning shops: %s\n", err)
 			return []types.Shop{}, err
 		}
 
@@ -47,6 +47,84 @@ func GetShop(db *sql.DB, id string) (types.Shop, error) {
 		return types.Shop{}, err
 	}
 	return shop, nil
+}
+
+func GetShopAvailabilities(db *sql.DB, id string) ([]types.ShopAvailability, error) {
+	res, err := database.DoQuery(db, "SELECT day_of_week, duration, start_time, end_time FROM shop_availability WHERE shop_id = ?", id)
+
+	if err != nil {
+		fmt.Printf("Error while getting shop availabilities from database: %s\n", err)
+		return []types.ShopAvailability{}, err
+	}
+
+	var availabilities []types.ShopAvailability
+	for res.Next() {
+		var availability types.ShopAvailability
+		err := res.Scan(&availability.DayOfWeek, &availability.Duration, &availability.StartTime, &availability.EndTime)
+		if err != nil {
+			fmt.Printf("Error while scanning shop availabilities: %s\n", err)
+			return []types.ShopAvailability{}, err
+		}
+
+		availabilities = append(availabilities, availability)
+	}
+	if len(availabilities) == 0 {
+		fmt.Printf("No availabilities: %s\n", err)
+		return []types.ShopAvailability{}, sql.ErrNoRows
+	}
+	return availabilities, nil
+}
+
+func GetShopAppointments(db *sql.DB, id string) ([]types.Appointment, error) {
+	res, err := database.DoQuery(db, "SELECT id, customer_name, appointment_date, appointment_time, appointment_date_time, shop_id FROM appointments WHERE shop_id = ?", id)
+
+	if err != nil {
+		fmt.Printf("Error while getting shop appointments from database: %s\n", err)
+		return []types.Appointment{}, err
+	}
+
+	var appointments []types.Appointment
+	for res.Next() {
+		var appointment types.Appointment
+		err := res.Scan(&appointment.ID, &appointment.CustomerName, &appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime, &appointment.ShopId)
+		if err != nil {
+			fmt.Printf("Error while scanning shop appointments: %s\n", err)
+			return []types.Appointment{}, err
+		}
+
+		appointments = append(appointments, appointment)
+	}
+	if len(appointments) == 0 {
+		fmt.Printf("No appointments: %s\n", err)
+		return []types.Appointment{}, sql.ErrNoRows
+	}
+	return appointments, nil
+}
+
+func GetShopsByUserId(db *sql.DB, id string) ([]types.Shop, error) {
+	res, err := database.DoQuery(db, "SELECT * FROM shops WHERE user_id = ?", id)
+
+	if err != nil {
+		fmt.Printf("Error while getting shops: %s\n", err)
+		return []types.Shop{}, err
+	}
+
+	var shops []types.Shop
+	for res.Next() {
+		var shop types.Shop
+		err := res.Scan(&shop.ID, &shop.ShopName, &shop.Description, &shop.Address, &shop.PhoneNumber, &shop.CreatedAt, &shop.UserId)
+		if err != nil {
+			fmt.Printf("Error while getting shops: %s\n", err)
+			return []types.Shop{}, err
+		}
+
+		shops = append(shops, shop)
+	}
+	if len(shops) == 0 {
+		fmt.Printf("No shops: %s\n", err)
+		return []types.Shop{}, sql.ErrNoRows
+	}
+	return shops, nil
 }
 
 func CreateShop(db *sql.DB, shop *types.Shop) (int64, error) {
@@ -97,26 +175,3 @@ func DeleteShop(db *sql.DB, id string) (int64, error) {
 
 	return affectedRows, nil
 }
-
-//func GetShopAppointments(db *sql.DB, id string) []types.AppointmentDateTimeInfos {
-//	res, err := database.DoQuery(db, "SELECT appointment_date, appointment_time, appointment_date_time FROM appointments WHERE shop_id = ?", id)
-//
-//	if err != nil {
-//		fmt.Printf("Error while getting shop appointments: %s\n", err)
-//	}
-//
-//	var appointments []types.AppointmentDateTimeInfos
-//	for res.Next() {
-//		var appointment types.AppointmentDateTimeInfos
-//		err := res.Scan(&appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime)
-//		if err != nil {
-//			fmt.Printf("Error while getting shop appointments: %s\n", err)
-//		}
-//
-//		appointments = append(appointments, appointment)
-//	}
-//	if len(appointments) == 0 {
-//		fmt.Printf("No appointments: %s\n", err)
-//	}
-//	return appointments
-//}

@@ -13,6 +13,56 @@ type ShopRepoTestSuite struct {
 	suite.Suite
 }
 
+func (suite *ShopRepoTestSuite) TestGetShops() {
+
+	suite.T().Run("Get the shops of user", func(t *testing.T) {
+		pool, resource := utils.IntegrationTestSetup()
+		defer utils.IntegrationTestTeardown(pool, resource)
+		// Given
+		expectedShop1 := types.Shop{
+			ID: 1,
+			ShopInfos: types.ShopInfos{
+				ShopName:    "Dentest",
+				Description: "dentiste test",
+				Address:     "1 rue des dentistes, 00000 TestCity",
+				PhoneNumber: "00 00 00 00 00",
+			},
+			CreatedAt: "2023-02-03 16:02:34",
+			UserId:    1,
+		}
+		expectedShop2 := types.Shop{
+			ID: 2,
+			ShopInfos: types.ShopInfos{
+				ShopName:    "orltest",
+				Description: "ORL test",
+				Address:     "1 rue des orls, 00000 TestCity",
+				PhoneNumber: "00 00 00 00 01",
+			},
+			CreatedAt: "2023-02-28 11:00:00",
+			UserId:    2,
+		}
+		expectedShop3 := types.Shop{
+			ID: 3,
+			ShopInfos: types.ShopInfos{
+				ShopName:    "shop3",
+				Description: "shop sans appointments",
+				Address:     "1 rue des shop3, 00000 TestCity",
+				PhoneNumber: "00 00 00 00 02",
+			},
+			CreatedAt: "2023-02-28 11:00:00",
+			UserId:    2,
+		}
+
+		expectedShops := []types.Shop{expectedShop1, expectedShop2, expectedShop3}
+
+		// When
+		shops, _ := repositories.GetShops(utils.DbTest)
+
+		// Then
+		assert.Equal(suite.T(), expectedShops, shops, "Shops are not correct")
+	})
+}
+
 func (suite *ShopRepoTestSuite) TestGetShop() {
 	pool, resource := utils.IntegrationTestSetup()
 	defer utils.IntegrationTestTeardown(pool, resource)
@@ -39,6 +89,118 @@ func (suite *ShopRepoTestSuite) TestGetShop() {
 		// Then
 		assert.Nil(suite.T(), err, "Error is not nil")
 		assert.Equal(suite.T(), expectedShop, shop, "Shop is not correct")
+	})
+}
+
+func (suite *ShopRepoTestSuite) TestGetShopAvailabilities() {
+	pool, resource := utils.IntegrationTestSetup()
+	defer utils.IntegrationTestTeardown(pool, resource)
+
+	suite.T().Run("Get a shop availabilities", func(t *testing.T) {
+		// Given
+		const shopId = "1"
+
+		expectedAvailability1 := types.ShopAvailability{
+			DayOfWeek: "tuesday",
+			Duration:  15,
+			StartTime: "09:00:00",
+			EndTime:   "19:00:00",
+		}
+		expectedAvailability2 := types.ShopAvailability{
+			DayOfWeek: "wednesday",
+			Duration:  15,
+			StartTime: "09:00:00",
+			EndTime:   "19:00:00",
+		}
+		expectedAvailability3 := types.ShopAvailability{
+			DayOfWeek: "thursday",
+			Duration:  15,
+			StartTime: "09:00:00",
+			EndTime:   "17:00:00",
+		}
+		expectedAvailability4 := types.ShopAvailability{
+			DayOfWeek: "friday",
+			Duration:  15,
+			StartTime: "09:00:00",
+			EndTime:   "17:00:00",
+		}
+		expectedAvailability5 := types.ShopAvailability{
+			DayOfWeek: "saturday",
+			Duration:  15,
+			StartTime: "09:00:00",
+			EndTime:   "19:00:00",
+		}
+
+		expectedAvailabilities := []types.ShopAvailability{
+			expectedAvailability1,
+			expectedAvailability2,
+			expectedAvailability3,
+			expectedAvailability4,
+			expectedAvailability5,
+		}
+
+		// When
+		shopAvailabilities, err := repositories.GetShopAvailabilities(utils.DbTest, shopId)
+
+		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
+		assert.Equal(suite.T(), expectedAvailabilities, shopAvailabilities, "Availabilities are not correct")
+	})
+}
+
+func (suite *ShopRepoTestSuite) TestGetShopAppointments() {
+	pool, resource := utils.IntegrationTestSetup()
+	defer utils.IntegrationTestTeardown(pool, resource)
+
+	suite.T().Run("Get a shop appointments", func(t *testing.T) {
+		// Given
+		const shopId = "1"
+
+		expectedAppointment1 := types.Appointment{
+			ID:           1,
+			CustomerName: "testeur_sans_compte_1",
+			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
+				AppointmentDate:     "2023-03-03",
+				AppointmentTime:     "09:30:00",
+				AppointmentDateTime: "2023-03-03 09:30:00",
+			},
+			ShopId: 1,
+		}
+
+		expectedAppointment2 := types.Appointment{
+			ID:           2,
+			CustomerName: "testeur3 testeur3",
+			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
+				AppointmentDate:     "2023-03-03",
+				AppointmentTime:     "10:30:00",
+				AppointmentDateTime: "2023-03-03 10:30:00",
+			},
+			ShopId: 1,
+		}
+
+		expectedAppointment3 := types.Appointment{
+			ID:           3,
+			CustomerName: "test_sans_compte_2",
+			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
+				AppointmentDate:     "2023-03-03",
+				AppointmentTime:     "12:30:00",
+				AppointmentDateTime: "2023-03-03 12:30:00",
+			},
+			ShopId: 1,
+		}
+
+		expectedAppointments := []types.Appointment{
+			expectedAppointment1,
+			expectedAppointment2,
+			expectedAppointment3,
+		}
+
+		// When
+		shopAppointments, err := repositories.GetShopAppointments(utils.DbTest, shopId)
+
+		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
+		assert.Equal(suite.T(), expectedAppointments, shopAppointments, "Appointments are not correct")
 	})
 }
 
@@ -70,30 +232,36 @@ func (suite *ShopRepoTestSuite) TestCreateShop() {
 	})
 }
 
-//func (suite *ShopRepoTestSuite) TestGetShops() {
-//	pool, resource := utils.IntegrationTestSetup()
-//	defer utils.IntegrationTestTeardown(pool, resource)
-//	// Given
-//	ShopInfos1 := types.ShopInfos{
-//		ShopName:    "Dentest",
-//		Description: "dentiste test",
-//		Address:     "1 rue des dentistes, 00000 TestCity",
-//		PhoneNumber: "00 00 00 00 00",
-//	}
-//	expectedShop1 := types.Shop{
-//		ID:        1,
-//		ShopInfos: ShopInfos1,
-//		CreatedAt: "2023-02-03 16:02:34",
-//		UserId:    1,
-//	}
-//	expectedShops := []types.Shop{expectedShop1}
-//
-//	// When
-//	shops, _ := repositories.GetShops()
-//
-//	// Then
-//	assert.Equal(suite.T(), expectedShops, shops, "Shops are not correct")
-//}
+func (suite *ShopRepoTestSuite) TestGetShopsByUserId() {
+	pool, resource := utils.IntegrationTestSetup()
+	defer utils.IntegrationTestTeardown(pool, resource)
+
+	suite.T().Run("Get shops by user id", func(t *testing.T) {
+		// Given
+		ShopInfos1 := types.ShopInfos{
+			ShopName:    "Dentest",
+			Description: "dentiste test",
+			Address:     "1 rue des dentistes, 00000 TestCity",
+			PhoneNumber: "00 00 00 00 00",
+		}
+		expectedShop1 := types.Shop{
+			ID:        1,
+			ShopInfos: ShopInfos1,
+			CreatedAt: "2023-02-03 16:02:34",
+			UserId:    1,
+		}
+
+		expectedShops := []types.Shop{expectedShop1}
+		const userId = "1"
+
+		// When
+		shops, err := repositories.GetShopsByUserId(utils.DbTest, userId)
+
+		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
+		assert.Equal(suite.T(), expectedShops, shops, "Shops are not correct")
+	})
+}
 
 func (suite *ShopRepoTestSuite) TestUpdateShop() {
 	pool, resource := utils.IntegrationTestSetup()
@@ -155,64 +323,6 @@ func (suite *ShopRepoTestSuite) TestDeleteShop() {
 		assert.NotNil(suite.T(), err, "It should return an error saying that the shop has appointments")
 	})
 }
-
-//func (suite *ShopRepoTestSuite) TestGetShopAppointments() {
-//	pool, resource := utils.IntegrationTestSetup()
-//	defer utils.IntegrationTestTeardown(pool, resource)
-//
-//	suite.T().Run("Get a shop appointments", func(t *testing.T) {
-//		// Given
-//		const shopId = "1"
-//
-//		expectedAppointmentDateTimeInfos1 := types.AppointmentDateTimeInfos{
-//			AppointmentDate:     "2023-03-03",
-//			AppointmentTime:     "9:30:00",
-//			AppointmentDateTime: "2023-03-03 10:30:00",
-//		}
-//		expectedAppointment1 := types.Appointment{
-//			ID:                       1,
-//			CustomerName:             "testeur_sans_compte_1",
-//			AppointmentDateTimeInfos: expectedAppointmentDateTimeInfos1,
-//			ShopId:                   1,
-//		}
-//
-//		expectedAppointmentDateTimeInfos2 := types.AppointmentDateTimeInfos{
-//			AppointmentDate:     "2023-03-03",
-//			AppointmentTime:     "10:30:00",
-//			AppointmentDateTime: "2023-03-03 10:30:00",
-//		}
-//		expectedAppointment2 := types.Appointment{
-//			ID:                       1,
-//			CustomerName:             "testeur3 testeur3",
-//			AppointmentDateTimeInfos: expectedAppointmentDateTimeInfos2,
-//			ShopId:                   1,
-//		}
-//
-//		expectedAppointmentDateTimeInfos3 := types.AppointmentDateTimeInfos{
-//			AppointmentDate:     "2023-03-03",
-//			AppointmentTime:     "12:30:00",
-//			AppointmentDateTime: "2023-03-03 10:30:00",
-//		}
-//		expectedAppointment3 := types.Appointment{
-//			ID:                       1,
-//			CustomerName:             "test_sans_compte_2",
-//			AppointmentDateTimeInfos: expectedAppointmentDateTimeInfos3,
-//			ShopId:                   1,
-//		}
-//
-//		expectedAppointments := []types.Appointment{
-//			expectedAppointment1,
-//			expectedAppointment2,
-//			expectedAppointment3,
-//		}
-//
-//		// When
-//		appointments := repositories.GetShopAppointments(utils.DbTest, shopId)
-//
-//		// Then
-//		assert.Equal(suite.T(), expectedAppointments, appointments, "Appointments are not correct")
-//	})
-//}
 
 func TestShopRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(ShopRepoTestSuite))

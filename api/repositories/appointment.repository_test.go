@@ -13,18 +13,62 @@ type AppointmentRepoTestSuite struct {
 	suite.Suite
 }
 
-//func (suite *AppointmentRepoTestSuite) TestGetAppointments() {
-//	pool, resource := utils.IntegrationTestSetup()
-//	defer utils.IntegrationTestTeardown(pool, resource)
-//
-//	suite.T().Run("Get all appointments", func(t *testing.T) {
-//		// Given
-//
-//		// When
-//
-//		// Then
-//	})
-//}
+func (suite *AppointmentRepoTestSuite) TestGetAppointments() {
+	pool, resource := utils.IntegrationTestSetup()
+	defer utils.IntegrationTestTeardown(pool, resource)
+
+	suite.T().Run("Get all appointments", func(t *testing.T) {
+		// Given
+
+		// When
+
+		// Then
+	})
+}
+
+func (suite *AppointmentRepoTestSuite) TestGetUserAppointments() {
+	pool, resource := utils.IntegrationTestSetup()
+	defer utils.IntegrationTestTeardown(pool, resource)
+
+	suite.T().Run("Get user appointmenta", func(t *testing.T) {
+		// Given
+		expectedAppointment := types.Appointment{
+			ID:           2,
+			CustomerName: "testeur3 testeur3",
+			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
+				AppointmentDate:     "2023-03-03",
+				AppointmentTime:     "10:30:00",
+				AppointmentDateTime: "2023-03-03 10:30:00",
+			},
+			ShopId: 1,
+			UserId: 3,
+			Email:  "testeur3@test.fr",
+		}
+
+		expectedAppointment1 := types.Appointment{
+			ID:           5,
+			CustomerName: "testeur3 testeur3",
+			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
+				AppointmentDate:     "2023-03-03",
+				AppointmentTime:     "14:30:00",
+				AppointmentDateTime: "2023-03-03 14:30:00",
+			},
+			ShopId: 2,
+			UserId: 3,
+			Email:  "testeur3@test.fr",
+		}
+		UserId := "3"
+
+		expectedAppointments := []types.Appointment{expectedAppointment, expectedAppointment1}
+
+		// When
+		appointments, err := repositories.GetUserAppointments(utils.DbTest, UserId)
+
+		// Then
+		assert.Nil(suite.T(), err, "Error is not nil")
+		assert.Equal(suite.T(), expectedAppointments, appointments, "Appointments are not correct")
+	})
+}
 
 func (suite *AppointmentRepoTestSuite) TestGetAppointment() {
 	pool, resource := utils.IntegrationTestSetup()
@@ -60,13 +104,14 @@ func (suite *AppointmentRepoTestSuite) TestCreateAppointment() {
 	suite.T().Run("Create an appointment", func(t *testing.T) {
 		// Given
 		appointment := types.Appointment{
-			CustomerName: "testeur_sans_compte_3",
+			CustomerName: "testeur3 testeur3",
 			AppointmentDateTimeInfos: types.AppointmentDateTimeInfos{
-				AppointmentDate:     "2023-03-03",
-				AppointmentTime:     "11:30:00",
-				AppointmentDateTime: "2023-03-03 11:30:00",
+				AppointmentDate: "2023-03-03",
+				AppointmentTime: "11:30:00",
 			},
 			ShopId: 1,
+			UserId: 3,
+			Email:  "testeur3@test.fr",
 		}
 		expectedLastId := int64(4)
 

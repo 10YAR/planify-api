@@ -36,31 +36,34 @@ CREATE TABLE IF NOT EXISTS `appointments` (
                                `appointment_date` date,
                                `appointment_time` time,
                                `appointment_date_time` datetime,
-                               `shop_id` int
+                               `shop_id` int,
+                               `user_id` int DEFAULT NULL,
+                               `user_email` varchar(255) NOT NULL
 );
 
 ALTER TABLE `appointments`
     ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
-    ADD UNIQUE KEY `appointment_date_time` (`appointment_date_time`);
+    ADD UNIQUE KEY `appointment_date_time` (`appointment_date_time`),
+    ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
 
 ALTER TABLE `shops` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 INSERT INTO `users` (`firstName`, `lastName`, `email`, `password`, `role`) VALUES
-    ('Thomas', 'Evano', 'thomas@mail.fr', 'thomas', 'retailer'),
+    ('Thomas', 'Evano', 'thomas@mail.fr', '$2a$10$GdAmHWozxcNIJydWceSnguflswqJtqBWXv.0iSItjWP1ssrXKxisy', 'retailer'),
     ('Diyar', 'Bayrakli', 'diyar@mail.fr', 'diyar', 'retailer');
 
 INSERT INTO `shops` (`shop_name`, `description`, `address`, `phone_number`, `created_at`, `user_id`) VALUES
     ('Docteur Thomas', 'Médecin généraliste', '2 rue des médecins, 75000 Paris', '01 01 01 01 01', '2023-02-03 16:00:00', 1),
     ('Docteur Diyar', 'Opthalmo', '1 rue des ophtalmo, 75000 Paris', '01 01 01 01 01', '2023-02-03 16:02:34', 1);
 
-INSERT INTO `shop_availability` (`id`, `shop_id`, `day_of_week`, `duration`, `start_time`, `end_time`) VALUES
-    (1, 1, 'tuesday', 30, '09:00:00', '19:00:00'),
-    (2, 1, 'wednesday', 30, '09:00:00', '19:00:00'),
-    (3, 1, 'thursday', 15, '09:00:00', '17:00:00'),
-    (4, 1, 'friday', 15, '09:00:00', '17:00:00'),
-    (5, 1, 'saturday', 30, '09:00:00', '19:00:00');
+INSERT INTO `shop_availability` (`shop_id`, `day_of_week`, `duration`, `start_time`, `end_time`) VALUES
+    (1, 'tuesday', 30, '09:00:00', '19:00:00'),
+    (1, 'wednesday', 30, '09:00:00', '19:00:00'),
+    (1, 'thursday', 15, '09:00:00', '17:00:00'),
+    (1, 'friday', 15, '09:00:00', '17:00:00'),
+    (1, 'saturday', 30, '09:00:00', '19:00:00');
 
-INSERT INTO `appointments` (`customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`) VALUES
-    ('Diyar Bayrakli', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1);
+INSERT INTO `appointments` (`customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`, `user_id`, `user_email`) VALUES
+    ('Diyar Bayrakli', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1, 2, 'diyar@mail.fr');
