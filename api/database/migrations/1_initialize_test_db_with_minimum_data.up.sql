@@ -32,12 +32,15 @@ CREATE TABLE IF NOT EXISTS `appointments` (
     `appointment_date` date,
     `appointment_time` time,
     `appointment_date_time` datetime,
-    `shop_id` int
+    `shop_id` int,
+    `user_id` int DEFAULT NULL,
+    `user_email` varchar(255) NOT NULL
 );
 
 ALTER TABLE `appointments`
     ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`),
-    ADD UNIQUE KEY `appointment_date_time` (`appointment_date_time`);
+    ADD UNIQUE KEY `appointment_date_time` (`appointment_date_time`),
+    ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `shop_availability` ADD FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`);
 
@@ -67,9 +70,9 @@ INSERT INTO `shop_availability` (`shop_id`, `day_of_week`, `duration`, `start_ti
     (2, 'friday', 30, '09:00:00', '17:00:00'),
     (2, 'saturday', 30, '09:00:00', '19:00:00');
 
-INSERT INTO `appointments` (`customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`) VALUES
-    ('testeur_sans_compte_1', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1),
-    ('testeur3 testeur3', '2023-03-03', '10:30:00', CONCAT(appointment_date, ' ', appointment_time), 1),
-    ('test_sans_compte_2', '2023-03-03', '12:30:00', CONCAT(appointment_date, ' ', appointment_time), 1),
-    ('testeur_sans_compte', '2023-03-03', '13:30:00', CONCAT(appointment_date, ' ', appointment_time), 2),
-    ('testeur3 testeur3', '2023-03-03', '14:30:00', CONCAT(appointment_date, ' ', appointment_time), 2);
+INSERT INTO `appointments` (`customer_name`, `appointment_date`, `appointment_time`, `appointment_date_time` , `shop_id`, `user_id`, `user_email`) VALUES
+    ('testeur_sans_compte_1', '2023-03-03', '09:30:00', CONCAT(appointment_date, ' ', appointment_time), 1, null, 'testeur_sans_compte_1@test.fr'),
+    ('testeur3 testeur3', '2023-03-03', '10:30:00', CONCAT(appointment_date, ' ', appointment_time), 1, 3, 'testeur3@test.fr'),
+    ('test_sans_compte_2', '2023-03-03', '12:30:00', CONCAT(appointment_date, ' ', appointment_time), 1, null, 'testeur_sans_compte_2@test.fr'),
+    ('testeur_sans_compte', '2023-03-03', '13:30:00', CONCAT(appointment_date, ' ', appointment_time), 2, null, 'testeur_sans_compte_@test.fr'),
+    ('testeur3 testeur3', '2023-03-03', '14:30:00', CONCAT(appointment_date, ' ', appointment_time), 2, 3, 'testeur3@test.fr');
