@@ -33,6 +33,32 @@ func GetAppointments(db *sql.DB) ([]types.Appointment, error) {
 	return appointments, nil
 }
 
+func GetUserAppointments(db *sql.DB, userId string) ([]types.Appointment, error) {
+	res, err := database.DoQuery(db, "SELECT * FROM appointments WHERE user_id = ?", userId)
+
+	if err != nil {
+		fmt.Printf("Error while getting appointments: %s\n", err)
+		return []types.Appointment{}, err
+	}
+
+	var appointments []types.Appointment
+	for res.Next() {
+		var appointment types.Appointment
+		err := res.Scan(&appointment.ID, &appointment.CustomerName, &appointment.AppointmentDate, &appointment.AppointmentTime, &appointment.AppointmentDateTime, &appointment.ShopId, &appointment.UserId, &appointment.Email)
+		if err != nil {
+			fmt.Printf("Error while getting appointments: %s\n", err)
+			return []types.Appointment{}, err
+		}
+
+		appointments = append(appointments, appointment)
+	}
+	if len(appointments) == 0 {
+		fmt.Printf("No appointments: %s\n", sql.ErrNoRows)
+		return []types.Appointment{}, sql.ErrNoRows
+	}
+	return appointments, nil
+}
+
 func GetAppointment(db *sql.DB, id string) (types.Appointment, error) {
 	res := database.DoQueryRow(db, "SELECT * FROM appointments WHERE id = ?", id)
 

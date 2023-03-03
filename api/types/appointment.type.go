@@ -14,3 +14,8 @@ type AppointmentDateTimeInfos struct {
 	AppointmentTime     string `validate:"required,min=7,max=8" json:"appointment_time"`
 	AppointmentDateTime string `validate:"" json:"appointment_date_time"`
 }
+
+type AppointmentWithShop struct {
+	Appointment
+	ShopName string `validate:"" json:"shop_name"`
+}

@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"strconv"
 )
 
 func GetAppointments(c *fiber.Ctx) error {
@@ -17,6 +18,30 @@ func GetAppointments(c *fiber.Ctx) error {
 		return c.JSON(utils.E404("Appointments not found", err))
 	}
 	return c.JSON(appointments)
+}
+
+func GetUserAppointments(c *fiber.Ctx) error {
+	userId := c.Params("userId")
+
+	db := utils.GetLocal[*sql.DB](c, "db")
+	appointments, err := repositories.GetUserAppointments(db, userId)
+
+	var appointmentsWithShop []types.AppointmentWithShop
+	for _, appointment := range appointments {
+		var appointmentWithShop types.AppointmentWithShop
+		shop, err := repositories.GetShop(db, strconv.Itoa(appointment.ShopId))
+		if err != nil {
+			fmt.Printf("Error while getting shop: %s\n", err)
+		}
+		appointmentWithShop.Appointment = appointment
+		appointmentWithShop.ShopName = shop.ShopName
+
+		appointmentsWithShop = append(appointmentsWithShop, appointmentWithShop)
+	}
+	if err != nil {
+		return c.JSON(utils.E404("Appointments not found", err))
+	}
+	return c.JSON(appointmentsWithShop)
 }
 
 func GetAppointment(c *fiber.Ctx) error {
