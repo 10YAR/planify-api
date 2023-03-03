@@ -50,7 +50,7 @@ func GetShop(db *sql.DB, id string) (types.Shop, error) {
 }
 
 func CreateShop(db *sql.DB, shop *types.Shop) (int64, error) {
-	res, err := database.DoExec(db, "INSERT INTO shops (shop_name, description, address, phone_number, created_at, user_id) VALUES (?, ?, ?, ?, ?, ?)", shop.ShopName, shop.Description, shop.Address, shop.PhoneNumber, shop.CreatedAt, shop.UserId)
+	res, err := database.DoExec(db, "INSERT INTO shops (shop_name, description, address, phone_number, user_id) VALUES (?, ?, ?, ?, ?)", shop.ShopName, shop.Description, shop.Address, shop.PhoneNumber, shop.UserId)
 	if err != nil {
 		fmt.Printf("Error while creating shop: %s\n", err)
 		return 0, err
@@ -66,7 +66,7 @@ func CreateShop(db *sql.DB, shop *types.Shop) (int64, error) {
 }
 
 func UpdateShop(db *sql.DB, shop *types.Shop, id string) (int64, error) {
-	res, err := database.DoExec(db, "UPDATE shops SET shop_name = ?, description = ?, address = ?, phone_number = ?, created_at = ?, user_id = ? WHERE id = ?", shop.ShopName, shop.Description, shop.Address, shop.PhoneNumber, shop.CreatedAt, shop.UserId, id)
+	res, err := database.DoExec(db, "UPDATE shops SET shop_name = ?, description = ?, address = ?, phone_number = ?, user_id = ? WHERE id = ?", shop.ShopName, shop.Description, shop.Address, shop.PhoneNumber, shop.UserId, id)
 	if err != nil {
 		fmt.Printf("Error while updating shop: %s\n", err)
 		return 0, err
