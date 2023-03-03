@@ -9,6 +9,11 @@ type ShopAvailability struct {
 	EndTime   string
 }
 
+type ShopAvailabilityWithShopId struct {
+	ShopAvailability
+	ShopId int
+}
+
 type ShopAvailabilityWithTimeSlots struct {
 	DayOfWeek string
 	Duration  int
